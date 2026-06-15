@@ -1,0 +1,23 @@
+# Ambienti Virtuali
+.venv/
+venv/
+env/
+
+# File di configurazione e segreti (FONDAMENTALE)
+.env
+
+# Cache di Python e compilati
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Log e database locali (se usi SQLite per il journal)
+*.sqlite3
+*.db
+*.log
+
+# File di sistema e IDE
+.DS_Store
+.vscode/
+.idea/
