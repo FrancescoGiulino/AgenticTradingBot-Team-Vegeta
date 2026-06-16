@@ -1,13 +1,16 @@
+import logging
 from langgraph.graph import StateGraph, START, END
 from .state import AgentState
+
+logger = logging.getLogger(__name__)
 from .nodes import init_portfolio, decisor, checker, executer, summarizer
 
 def route_after_checker(state: AgentState) -> str:
     if state.get("is_decision_valid", False):
-        print("--- [ROUTER] Decision is VALID. Routing to EXECUTER. ---")
+        logger.info("[ROUTER] Decision is VALID. Routing to EXECUTER.")
         return "executer"
     else:
-        print("--- [ROUTER] Decision is INVALID. Bypassing execution, routing to SUMMARIZER. ---")
+        logger.info("[ROUTER] Decision is INVALID. Bypassing execution, routing to SUMMARIZER.")
         return "summarizer"
 
 workflow = StateGraph(AgentState)
