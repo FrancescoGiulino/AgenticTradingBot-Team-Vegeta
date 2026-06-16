@@ -3,7 +3,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .state import AgentState, TradeDecision
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
+from .db import log_trade_journal
 import json
+import time
 from datetime import datetime
 
 # Initialize the LLM with Google API Key
@@ -244,7 +246,7 @@ def summarizer(state: AgentState) -> dict:
     else:
         outcome = "UNKNOWN / NO DECISION"
 
-    # 2. Construct the journal entry
+    # 2. Construct the journal entry for state memory
     # Using fallback values if no decision was formulated due to upstream crashes
     journal_entry = {
         "timestamp": datetime.now().isoformat(),
@@ -257,24 +259,24 @@ def summarizer(state: AgentState) -> dict:
         "outcome": outcome
     }
     
-    # 3. Persist the journal entry into a local JSON file for the jury presentation
-    journal_file = "trade_journal.json"
-    try:
-        # Load existing logs or start fresh
-        try:
-            with open(journal_file, "r") as f:
-                current_logs = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            current_logs = []
-            
-        current_logs.append(journal_entry)
-        
-        # Write back to file with nice formatting
-        with open(journal_file, "w") as f:
-            json.dump(current_logs, f, indent=4)
-        print(f"--- [SUMMARIZER] Successfully appended log to {journal_file} ---")
-    except Exception as e:
-        print(f"--- [WARNING] SUMMARIZER failed to write to local file: {str(e)} ---")
+    # 3. Persist the journal entry into the SQLite database instead of JSON
+    cycle_id = state.get("cycle_id") or f"cycle-{int(time.time())}"
+    success = log_trade_journal(
+        cycle_id=cycle_id,
+        agent_type="decisor",
+        ticker=journal_entry["ticker"],
+        action=journal_entry["action"],
+        quantity=journal_entry["quantity"],
+        price=journal_entry["price"],
+        news_summary=journal_entry["news_summary"],
+        rationale=journal_entry["rationale"],
+        outcome=journal_entry["outcome"],
+        data_sources="Alpaca, yfinance"
+    )
+    if success:
+        print("--- [SUMMARIZER] Successfully logged trade to SQLite database. ---")
+    else:
+        print("--- [WARNING] SUMMARIZER failed to log trade to SQLite database. ---")
 
     # 4. Update the rolling memory (last_n_actions)
     # Create a shallow copy, append the new summary, and keep only the latest MAX_N items

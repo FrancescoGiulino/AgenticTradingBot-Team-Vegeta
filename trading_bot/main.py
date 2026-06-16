@@ -1,5 +1,6 @@
 import time
 from .graph import app
+from .db import init_db
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -16,6 +17,9 @@ def print_header():
 def main():
     print_header()
     
+    # Initialize the SQLite database
+    init_db()
+    
     # 1. Initialize the starting state
     # According to the rules, the agent starts with a simulated portfolio.
     # Alpaca already handles the 100k USD paper money, but we define the tickers we care about.
@@ -26,7 +30,8 @@ def main():
         "is_decision_valid": False,
         "last_n_actions": [],
         "journal": [],
-        "error_message": None
+        "error_message": None,
+        "cycle_id": None
     }
     
     # We maintain the 'current_state' outside the loop so memory persists across cycles
@@ -50,6 +55,9 @@ def main():
             # This makes the demo look much more dynamic!
             current_ticker = current_state["target_tickers"][0]
             print(f"[SYSTEM] Focusing analysis on: {current_ticker}")
+            
+            # Generate a unique cycle ID for this iteration
+            current_state["cycle_id"] = f"cycle-{cycle_count}-{int(time.time())}"
             
             # 3. Invoke the LangGraph workflow
             # We pass the current_state, and the graph returns the updated state after all nodes finish

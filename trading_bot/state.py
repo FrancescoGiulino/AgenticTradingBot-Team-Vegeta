@@ -35,3 +35,6 @@ class AgentState(TypedDict):
     
     # Error tracking (useful for fallback logic and the Best Recovery challenge)
     error_message: Optional[str]
+    
+    # Unique ID representing the current execution cycle
+    cycle_id: Optional[str]
