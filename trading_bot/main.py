@@ -1,5 +1,5 @@
 import time
-from graph import app
+from .graph import app
 from datetime import datetime
 from dotenv import load_dotenv
 

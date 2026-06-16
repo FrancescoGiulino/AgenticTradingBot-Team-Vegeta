@@ -1,8 +1,8 @@
 import os
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from state import AgentState, TradeDecision
-from tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
+from .state import AgentState, TradeDecision
+from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
 import json
 from datetime import datetime
 
