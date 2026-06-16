@@ -1,0 +1,12 @@
+{
+  "alpaca": {
+    "requests_per_minute": 200
+  },
+  "yfinance": {
+    "requests_per_minute": 6
+  },
+  "google_genai": {
+    "requests_per_minute": 15,
+    "tokens_per_minute": -1
+  }
+}

@@ -2,6 +2,7 @@ import time
 from .graph import app
 from datetime import datetime
 from dotenv import load_dotenv
+from .rate_limiter import rate_limiter
 
 # Load API keys from .env just to be safe, though tools.py already does it
 load_dotenv()
@@ -15,6 +16,9 @@ def print_header():
 
 def main():
     print_header()
+    
+    # Load Rate Limits Configuration
+    rate_limiter.load_config("rate_limits.json")
     
     # 1. Initialize the starting state
     # According to the rules, the agent starts with a simulated portfolio.

@@ -3,6 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .state import AgentState, TradeDecision
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
+from .rate_limiter import rate_limiter
 import json
 from datetime import datetime
 
@@ -103,6 +104,18 @@ def decisor(state: AgentState) -> dict:
     reasoning_chain = prompt | decisor_llm
     
     try:
+        # Roughly estimate tokens for TPM rate limiting (1 token ~ 4 characters)
+        prompt_str = prompt.format(
+            portfolio=portfolio,
+            ticker=current_ticker,
+            price_data=price_data,
+            news_data=news_data
+        )
+        estimated_tokens = len(prompt_str) // 4
+        
+        rate_limiter.acquire("google_genai_rpm", 1)
+        rate_limiter.acquire("google_genai_tpm", estimated_tokens)
+        
         # Invoke the chain with the gathered data
         decision = reasoning_chain.invoke({
             "portfolio": portfolio,
