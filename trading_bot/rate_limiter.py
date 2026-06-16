@@ -69,6 +69,8 @@ class GlobalRateLimiter:
                 
                 if bucket["current_tokens"] >= amount:
                     bucket["current_tokens"] -= amount
+                    remaining = bucket["current_tokens"]
+                    logger.info(f"[RATE LIMITER] Used {amount} token(s) for '{name}'. Remaining tokens: {remaining:.2f}")
                     return
                 
                 # If not enough tokens, calculate sleep time
@@ -76,7 +78,7 @@ class GlobalRateLimiter:
                 # time needed to generate `deficit` tokens
                 time_to_wait = (deficit / bucket["max_tokens"]) * bucket["refill_interval"]
             
-            logger.info(f"Rate limit reached for '{name}'. Sleeping for {time_to_wait:.2f} seconds to acquire {amount} tokens.")
+            logger.warning(f"[RATE LIMITER] Limit reached for '{name}'. Sleeping for {time_to_wait:.2f} seconds to acquire {amount} tokens.")
             time.sleep(max(0.1, time_to_wait)) # Sleep at least 0.1s to avoid tight loop
 
     def load_config(self, config_path: str):

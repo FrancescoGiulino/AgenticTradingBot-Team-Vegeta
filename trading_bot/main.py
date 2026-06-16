@@ -1,18 +1,48 @@
 import time
+import logging
 from .graph import app
 from datetime import datetime
 from dotenv import load_dotenv
 from .rate_limiter import rate_limiter
 
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        'WARNING': '\033[93m', # Yellow
+        'INFO': '\033[94m',    # Blue
+        'DEBUG': '\033[90m',   # Grey
+        'CRITICAL': '\033[91m',# Red
+        'ERROR': '\033[91m',   # Red
+    }
+    EMOJIS = {
+        'WARNING': '⚠️',
+        'INFO': 'ℹ️',
+        'DEBUG': '🐛',
+        'CRITICAL': '🚨',
+        'ERROR': '❌',
+    }
+    RESET = '\033[0m'
+
+    def format(self, record):
+        color = self.COLORS.get(record.levelname, self.RESET)
+        emoji = self.EMOJIS.get(record.levelname, '')
+        formatted_msg = super().format(record)
+        return f"{color}{emoji} {formatted_msg}{self.RESET}"
+
+# Configure logging
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+handler.setFormatter(ColoredFormatter('%(asctime)s | %(name)-24s | %(levelname)-8s | %(message)s'))
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+
 # Load API keys from .env just to be safe, though tools.py already does it
 load_dotenv()
 
 def print_header():
-    print("=" * 60)
-    print("STARTING AGENTIC AI TRADING BOT")
-    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("Target Ambition: Level 3 (Autonomous Loop)")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("STARTING AGENTIC AI TRADING BOT")
+    logger.info(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info("Target Ambition: Level 3 (Autonomous Loop)")
+    logger.info("=" * 60)
 
 def main():
     print_header()
@@ -45,15 +75,15 @@ def main():
     
     try:
         # 2. Start the Autonomous Loop
-        print(f"\n[SYSTEM] Entering Autonomous Mode. Press Ctrl+C to stop.\n")
+        logger.info("[SYSTEM] Entering Autonomous Mode. Press Ctrl+C to stop.")
         
         while True:
-            print(f"\n--- STARTING CYCLE {cycle_count} ---")
+            logger.info(f" STARTING CYCLE {cycle_count} ")
             
             # Since target_tickers is a list, we can rotate through them to analyze a different stock each cycle
             # This makes the demo look much more dynamic!
             current_ticker = current_state["target_tickers"][0]
-            print(f"[SYSTEM] Focusing analysis on: {current_ticker}")
+            logger.info(f"[SYSTEM] Focusing analysis on: {current_ticker}")
             
             # 3. Invoke the LangGraph workflow
             # We pass the current_state, and the graph returns the updated state after all nodes finish
@@ -68,18 +98,18 @@ def main():
             # Update our main state tracker
             current_state = updated_state
             
-            print(f"--- CYCLE {cycle_count} COMPLETE ---")
-            print(f"[SYSTEM] Sleeping for {CYCLE_DELAY_SECONDS} seconds before next cycle...\n")
+            logger.info(f"CYCLE {cycle_count} COMPLETE ")
+            logger.info(f"[SYSTEM] Sleeping for {CYCLE_DELAY_SECONDS} seconds before next cycle...")
             
             # 5. Wait before the next loop
             time.sleep(CYCLE_DELAY_SECONDS)
             cycle_count += 1
 
     except KeyboardInterrupt:
-        print("\n" + "=" * 60)
-        print("AGENT STOPPED BY USER")
-        print("Finalizing logs and shutting down safely.")
-        print("=" * 60)
+        logger.warning("=" * 60)
+        logger.warning("AGENT STOPPED BY USER")
+        logger.warning("Finalizing logs and shutting down safely.")
+        logger.warning("=" * 60)
 
 if __name__ == "__main__":
     main()

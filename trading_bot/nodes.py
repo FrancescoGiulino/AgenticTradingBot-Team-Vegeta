@@ -1,4 +1,7 @@
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .state import AgentState, TradeDecision
@@ -21,12 +24,12 @@ def init_portfolio(state: AgentState) -> dict:
     Responsible for fetching the current portfolio status from Alpaca
     and injecting it into the agent's state before the DECISOR runs.
     """
-    print("--- [NODE] INIT_PORTFOLIO: Fetching portfolio data ---")
+    logger.info(" [NODE] INIT_PORTFOLIO: Fetching portfolio data ")
     
     portfolio_data = get_portfolio_status.invoke({})
     
     if "error" in portfolio_data:
-        print(f"--- [WARNING] INIT_PORTFOLIO encountered an error: {portfolio_data['error']} ---")
+        logger.warning(f" [WARNING] INIT_PORTFOLIO encountered an error: {portfolio_data['error']} ")
         return {
             "portfolio": {}, 
             "error_message": portfolio_data["error"]
@@ -49,7 +52,7 @@ def decisor(state: AgentState) -> dict:
     2. Evaluates market data and news (Proposes BUY).
     3. Otherwise, proposes HOLD.
     """
-    print("--- [NODE] DECISOR: Analyzing market and reasoning ---")
+    logger.info(" [NODE] DECISOR: Analyzing market and reasoning ")
     
     portfolio = state.get("portfolio", {})
     # For now, we pick the first target ticker to analyze
@@ -60,7 +63,7 @@ def decisor(state: AgentState) -> dict:
     
     # ANTI-FRAGILE LOGIC: If a previous node failed, we gracefully HOLD
     if error_message:
-        print(f"--- [WARNING] DECISOR detected an error: {error_message}. Defaulting to HOLD. ---")
+        logger.warning(f" [WARNING] DECISOR detected an error: {error_message}. Defaulting to HOLD. ")
         fallback_decision = TradeDecision(
             ticker=current_ticker,
             action="HOLD",
@@ -75,7 +78,7 @@ def decisor(state: AgentState) -> dict:
     price_data = get_stock_price.invoke(current_ticker)
     
     # Fetch real news using the tool
-    print(f"--- [DECISOR] Fetching news for {current_ticker}... ---")
+    logger.info(f"[DECISOR] Fetching news for {current_ticker}... ")
     news_data = get_stock_news.invoke(current_ticker)
     
     # Prepare the system prompt enforcing your exact business rules
@@ -125,7 +128,7 @@ def decisor(state: AgentState) -> dict:
         })
     except Exception as e:
         # GRACEFUL RECOVERY: If the LLM fails to parse the JSON or crashes
-        print(f"--- [ERROR] DECISOR LLM failed: {str(e)} ---")
+        logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
         decision = TradeDecision(
             ticker=current_ticker,
             action="HOLD",
@@ -145,14 +148,14 @@ def checker(state: AgentState) -> dict:
     - SELL: Checks if the portfolio actually holds enough quantity of the ticker.
     - HOLD: Automatically accepted.
     """
-    print("--- [NODE] CHECKER: Validating feasibility of the decision ---")
+    logger.info("[NODE] CHECKER: Validating feasibility of the decision ")
     
     decision = state.get("proposed_decision")
     portfolio = state.get("portfolio", {})
     
     # If for some reason there is no decision, we reject and stop.
     if not decision:
-        print("--- [ERROR] CHECKER: No decision found to validate. ---")
+        logger.error("[ERROR] CHECKER: No decision found to validate. ")
         return {"is_decision_valid": False}
         
     action = decision.action.upper()
@@ -161,17 +164,17 @@ def checker(state: AgentState) -> dict:
     
     # HOLD is always feasible
     if action == "HOLD":
-        print("--- [CHECKER] Action is HOLD. Accepted automatically. ---")
+        logger.info("[CHECKER] Action is HOLD. Accepted automatically. ")
         return {"is_decision_valid": True}
         
     # SELL logic: Do we actually own the shares?
     elif action == "SELL":
         positions = portfolio.get("positions", {})
         if ticker in positions and positions[ticker]["qty"] >= quantity:
-            print(f"--- [CHECKER] Sufficient shares owned to SELL {quantity} {ticker}. Accepted. ---")
+            logger.info(f"[CHECKER] Sufficient shares owned to SELL {quantity} {ticker}. Accepted. ")
             return {"is_decision_valid": True}
         else:
-            print(f"--- [CHECKER] REJECTED: Not enough shares of {ticker} to sell. ---")
+            logger.info(f"[CHECKER] REJECTED: Not enough shares of {ticker} to sell. ")
             return {"is_decision_valid": False}
             
     # BUY logic: Do we have enough cash?
@@ -181,14 +184,14 @@ def checker(state: AgentState) -> dict:
         estimated_cost = quantity * decision.current_price
         
         if cash_available >= estimated_cost:
-            print(f"--- [CHECKER] Sufficient cash to BUY {quantity} {ticker}. Accepted. ---")
+            logger.info(f"[CHECKER] Sufficient cash to BUY {quantity} {ticker}. Accepted. ")
             return {"is_decision_valid": True}
         else:
-            print(f"--- [CHECKER] REJECTED: Insufficient cash. Need {estimated_cost}, have {cash_available}. ---")
+            logger.info(f"[CHECKER] REJECTED: Insufficient cash. Need {estimated_cost}, have {cash_available}. ")
             return {"is_decision_valid": False}
             
     # Fallback for unexpected actions
-    print(f"--- [WARNING] CHECKER: Unrecognized action '{action}'. Rejected. ---")
+    logger.warning(f"[WARNING] CHECKER: Unrecognized action '{action}'. Rejected. ")
     return {"is_decision_valid": False}
 
 def executer(state: AgentState) -> dict:
@@ -197,17 +200,17 @@ def executer(state: AgentState) -> dict:
     Executes the validated trade decision using the Alpaca API.
     Bypasses execution if the decision was HOLD or if the CHECKER rejected it.
     """
-    print("--- [NODE] EXECUTER: Executing the trade ---")
+    logger.info("[NODE] EXECUTER: Executing the trade ")
     
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
     
     # 1. Skip execution if invalid, missing, or just a HOLD
     if not is_valid or not decision or decision.action.upper() == "HOLD":
-        print("--- [EXECUTER] No execution required (Action is HOLD or Invalid). ---")
+        logger.info("[EXECUTER] No execution required (Action is HOLD or Invalid). ")
         return {} # No changes to the state
         
-    print(f"--- [EXECUTER] Sending order to Alpaca: {decision.action} {decision.quantity} {decision.ticker} ---")
+    logger.info(f"[EXECUTER] Sending order to Alpaca: {decision.action} {decision.quantity} {decision.ticker} ")
     
     # 2. Call the execution tool
     execution_result = execute_trade.invoke({
@@ -218,11 +221,11 @@ def executer(state: AgentState) -> dict:
     
     # 3. Handle execution errors (Anti-Fragile logic)
     if "error" in execution_result:
-        print(f"--- [ERROR] EXECUTER failed: {execution_result['error']} ---")
+        logger.error(f"[ERROR] EXECUTER failed: {execution_result['error']} ")
         # Save the error in the state so the Summarizer/Journal can log the failure
         return {"error_message": execution_result["error"]}
         
-    print(f"--- [EXECUTER] Order successful! Order ID: {execution_result.get('order_id')} ---")
+    logger.info(f"[EXECUTER] Order successful! Order ID: {execution_result.get('order_id')} ")
     
     # Clear any previous errors if successful
     return {"error_message": None}
@@ -237,7 +240,7 @@ def summarizer(state: AgentState) -> dict:
     3. Updates the 'last_n_actions' rolling list (memory layer).
     4. Clears temporary/heavy data to provide a clean state for the next iteration.
     """
-    print("--- [NODE] SUMMARIZER: Logging journal and cleaning state ---")
+    logger.info("[NODE] SUMMARIZER: Logging journal and cleaning state ")
     
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
@@ -285,9 +288,9 @@ def summarizer(state: AgentState) -> dict:
         # Write back to file with nice formatting
         with open(journal_file, "w") as f:
             json.dump(current_logs, f, indent=4)
-        print(f"--- [SUMMARIZER] Successfully appended log to {journal_file} ---")
+        logger.info(f"[SUMMARIZER] Successfully appended log to {journal_file} ")
     except Exception as e:
-        print(f"--- [WARNING] SUMMARIZER failed to write to local file: {str(e)} ---")
+        logger.warning(f"[WARNING] SUMMARIZER failed to write to local file: {str(e)} ")
 
     # 4. Update the rolling memory (last_n_actions)
     # Create a shallow copy, append the new summary, and keep only the latest MAX_N items
