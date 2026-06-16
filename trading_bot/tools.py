@@ -12,6 +12,7 @@ news_client = NewsClient(
     api_key=os.getenv("ALPACA_API_KEY"), 
     secret_key=os.getenv("ALPACA_SECRET_KEY")
 )
+from .rate_limiter import rate_limiter
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -31,6 +32,7 @@ def get_portfolio_status() -> dict:
     and if there are positions in loss.
     """
     try:
+        rate_limiter.acquire("alpaca_rpm")
         account = trading_client.get_account()
         positions = trading_client.get_all_positions()
         
@@ -58,6 +60,7 @@ def get_stock_price(ticker: str) -> dict:
     Fetches the current market price for a given stock ticker using yfinance.
     """
     try:
+        rate_limiter.acquire("yfinance_rpm")
         stock = yf.Ticker(ticker)
         # Fetch the latest available price (1 day period)
         todays_data = stock.history(period='1d')
@@ -88,6 +91,7 @@ def execute_trade(ticker: str, action: str, quantity: int) -> dict:
         )
         
         # Submit the order to Alpaca
+        rate_limiter.acquire("alpaca_rpm")
         order = trading_client.submit_order(order_data=market_order_data)
         return {"status": "success", "order_id": str(order.id)}
         
@@ -102,6 +106,7 @@ def get_stock_news(ticker: str) -> dict:
     using the official Alpaca News API (Benzinga integration).
     """
     try:
+        rate_limiter.acquire("yfinance_rpm")
         # Convert hyphen (used for Yahoo) back to the original slash for Alpaca
         clean_ticker = ticker.replace("-", "/")
         
@@ -117,6 +122,8 @@ def get_stock_news(ticker: str) -> dict:
         
         # Extract the list of articles
         news_items = news_response.news
+        stock = yf.Ticker(ticker)
+        news_items = stock.news
         
         if not news_items:
             return {"news": f"No recent news found for {clean_ticker}."}
@@ -129,3 +136,4 @@ def get_stock_news(ticker: str) -> dict:
         
     except Exception as e:
         return {"error": f"Failed to fetch Alpaca news for {ticker}: {str(e)}"}
+        return {"error": f"Failed to fetch news for {ticker}: {str(e)}"}

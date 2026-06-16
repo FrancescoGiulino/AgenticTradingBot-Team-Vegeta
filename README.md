@@ -10,10 +10,11 @@ Our core philosophy aligns with the hackathon's primary rule: **Zero Data Halluc
 - **Sequential Multi-Agent Workflow:** Utilizes a pipeline consisting of a Coordinator, an Analyst, and a Chief Risk Officer (CRO) to cross-validate every trade proposal.
 - **Robust Risk Management:** Implements safety fallbacks to handle missing data or API failures gracefully without crashing.
 - **Trade Journaling:** Maintains an automated, structured log of every decision, including timestamp, ticker, rationale, and outcome.
+- **Global Rate Limiting:** Enforces rate limits (Requests Per Minute and Tokens Per Minute) across all API dependencies using a Token Bucket algorithm, configurable via `rate_limits.json`.
 
 ## Tech Stack
 - **Framework:** LangGraph (for stateful, multi-actor LLM orchestration)
-- **Intelligence:** Groq Cloud (Llama-3 models) for ultra-fast, structured reasoning
+- **Intelligence:** Google Gemini Gemma4 (31B / 26B a4b) for cheap structured reasoning
 - **Market Data:** yfinance / NewsAPI
 - **Broker:** Alpaca Paper Trading API
 - **Language:** Python 3.13+
