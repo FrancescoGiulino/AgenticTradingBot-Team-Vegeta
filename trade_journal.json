@@ -1,0 +1,1992 @@
+[
+    {
+        "timestamp": "2026-06-16T10:00:16.834327",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:17.253727",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:17.683927",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:18.090636",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:18.518531",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:18.939688",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:19.353536",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:19.761579",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:20.188935",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:20.599252",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:21.031441",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:21.443703",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:21.885249",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:22.281784",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:22.679916",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:23.098442",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:23.682596",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:24.100844",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:24.509964",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:24.946916",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:25.372133",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:25.777294",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:26.185341",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:26.578971",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:27.113225",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:27.537106",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:27.950431",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:28.358689",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:28.764879",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:29.192117",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:29.642526",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:30.057301",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:30.695929",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:31.106278",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:31.623382",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:32.051899",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:32.470124",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:32.899443",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:33.332988",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:33.757797",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:34.171570",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:34.594673",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:35.031159",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:35.470866",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:36.149022",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:36.566073",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:36.985357",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:37.392815",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:37.917081",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:38.336736",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:38.766446",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:39.198575",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:39.630611",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:40.056173",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:40.468519",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:40.925100",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:41.343290",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:41.877680",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:42.295199",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:42.703897",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:43.119874",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:43.530594",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:44.354441",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:45.084371",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:45.505102",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:45.921935",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:46.353569",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:46.798798",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:47.222092",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:47.658459",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:48.180818",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:48.603437",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:49.139926",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:49.567316",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:50.105663",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:50.513505",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:50.940726",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:51.350320",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:51.751354",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:52.172477",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:52.582572",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:53.007700",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:53.431202",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:53.917953",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:54.426149",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:54.850339",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:55.257680",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:55.759287",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:56.266366",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:56.677623",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:57.149103",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:57.562305",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:58.054685",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:58.460332",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:58.863508",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:59.267769",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:00:59.691587",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:00.102176",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:00.499815",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:00.900502",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:01.318402",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:01.727464",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:02.492227",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:02.903112",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:03.301252",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:03.709188",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:04.109873",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:04.518027",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:04.927767",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:05.339589",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:05.762427",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:06.161501",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:06.560449",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:06.955800",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:07.355010",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:07.758468",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:08.186600",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:08.630224",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:09.131715",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:09.537925",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:09.941824",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:10.357288",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:10.758126",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:11.187743",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:11.585741",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:11.996528",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:12.375654",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:12.772052",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:13.287084",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:13.684959",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:14.372341",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:14.776764",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:15.194031",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:15.593629",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:15.997953",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:16.397919",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:16.801664",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:17.225038",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:17.623928",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:18.019571",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:18.424166",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:18.902707",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:19.301775",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:19.704196",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:20.319153",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:20.763766",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:21.138667",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:21.523940",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:21.908892",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:22.335395",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:22.714870",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:23.102414",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:23.496471",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:23.891660",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:24.279899",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:47.836900",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:48.229230",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:48.625465",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:49.018560",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:49.418937",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:49.895732",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:50.274088",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:51.042476",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:51.431790",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:51.814686",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:52.266400",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:52.643051",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:01:53.026342",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:43.632138",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:44.044761",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:44.457706",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:44.855454",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:45.263187",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:45.677406",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:46.083935",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:46.487488",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:47.098383",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:47.496609",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:47.898441",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:48.305390",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:48.721606",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:49.113138",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:04:49.517421",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 0.0,
+        "news_summary": "N/A",
+        "rationale": "LLM processing error encountered: Error calling model 'gemma-4-26b-it' (NOT_FOUND): 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemma-4-26b-it is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}. Defaulting to safe action: HOLD.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:06:30.413182",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No significant market news identified today.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is not applicable. There is no distinctly positive news or highly favorable price movement indicated in the provided data to justify a BUY action. Therefore, according to the rule for HOLD, I am proposing a HOLD with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:06:33.767402",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No significant market news identified today.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is not applicable. There is no distinctly positive news or highly favorable price movement indicated in the provided data to justify a BUY action. Therefore, according to the rule for HOLD, I am proposing a HOLD with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:06:37.088583",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No significant market news identified today.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is not applicable. There is no distinctly positive news or highly favorable price movement indicated in the provided data to justify a BUY action. Therefore, according to the rule for HOLD, I am proposing a HOLD with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:06:40.440916",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No significant market news identified today.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is not applicable. There is no distinctly positive news or highly favorable price movement indicated in the provided data to justify a BUY action. Therefore, according to the rule for HOLD, I am proposing a HOLD with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:06:43.852935",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No significant market news identified today.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is not applicable. There is no distinctly positive news or highly favorable price movement indicated in the provided data to justify a BUY action. Therefore, according to the rule for HOLD, I am proposing a HOLD with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:06:47.193751",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No significant market news identified today.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is not applicable. There is no distinctly positive news or highly favorable price movement indicated in the provided data to justify a BUY action. Therefore, according to the rule for HOLD, I am proposing a HOLD with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:11:48.419874",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No news available for the asset.",
+        "rationale": "The target ticker AAPL is not currently owned in the portfolio, so the first rule for selling is not met. There is no positive news or highly favorable price data provided to justify a rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-1234567890",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:12:28.335290",
+        "ticker": "MSFT",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 399.760009765625,
+        "news_summary": "No news provided.",
+        "rationale": "The target ticker MSFT is not currently owned in the portfolio, so the condition for selling in loss is not met. There is no positive news provided to justify a BUY action. Therefore, according to the rules, I am proposing a HOLD action with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:14:48.990103",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No news available for the asset.",
+        "rationale": "The target ticker AAPL is not currently owned in the portfolio, so the first rule for selling is not met. There is no positive news or highly favorable price data provided to justify a rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-based rule-1234567890",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:15:02.223729",
+        "ticker": "MSFT",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 399.760009765625,
+        "news_summary": "No news provided.",
+        "rationale": "The target ticker MSFT is not currently owned in the portfolio, so the condition for selling in loss is not met. There is no positive news provided to justify a BUY action. Therefore, according to the rules, I am proposing a HOLD action with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:15:10.873940",
+        "ticker": "GOOGL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 369.3500061035156,
+        "news_summary": "No news available for the asset.",
+        "rationale": "The target ticker GOOGL is not currently owned in the portfolio, so the first rule for selling is not met. There is no positive news or highly favorable price data provided to justify a BUY action. Therefore, according to the rules, I am proposing a HOLD action with a quantity of 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:19:46.291135",
+        "ticker": "AAPL",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 296.4200134277344,
+        "news_summary": "No news available for the asset.",
+        "rationale": "The target ticker AAPL is not currently owned, so the rule for selling in loss is unlikely to be met. Since there no news provided, the news sentiment is not positive, not negative, empty, or growth-oriented. According to the rule 3, rule 2 is not met because there is no positive sentiment to trigger a BUY decision. Therefore, I am proposing HOLD with quantity 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:19:56.932945",
+        "ticker": "MSFT",
+        "action": "HOLD",
+        "quantity": 0,
+        "price": 399.760009765625,
+        "news_summary": "No news available for the asset.",
+        "rationale": "The target ticker MSFT is not currently owned, so the rule for selling in loss is unlikely to be met. Since there no is no positive news provided in the chance of the news is strictly irrelevant or empty, the rule for holding is holding. Therefore, I am proposing a HOLD action with quantity 0.",
+        "outcome": "SUCCESSFULLY EXECUTED HOLD"
+    },
+    {
+        "timestamp": "2026-06-16T10:21:56.317383",
+        "ticker": "AAPL",
+        "action": "BUY",
+        "quantity": 15,
+        "price": 296.4200134277344,
+        "news_summary": "No recent news available for the ticker.",
+        "rationale": "The portfolio is currently empty (0 positions) and holds 100% cash. According to rule 2, my primary mandate is to enter the market and deploy initial capital. Since the news is neutral/informational (empty), I am proposing a 'BUY' to avoid sitting on 100% cash.",
+        "outcome": "SUCCESSFULLY EXECUTED BUY"
+    },
+    {
+        "timestamp": "2026-06-16T10:22:05.644660",
+        "ticker": "MSFT",
+        "action": "BUY",
+        "quantity": 10,
+        "price": 399.760009765625,
+        "news_summary": "No significant news reported for the current ticker.",
+        "rationale": "The portfolio is currently empty (0 positions) and holds 100% cash ($100,000.0). According to Rule 2, my primary mandate is to enter the market and deploy initial capital. Since the news is neutral/informational, I am proposing a BUY of 10 shares to begin building a position in MSFT.",
+        "outcome": "SUCCESSFULLY EXECUTED BUY"
+    },
+    {
+        "timestamp": "2026-06-16T10:22:25.048923",
+        "ticker": "GOOGL",
+        "action": "BUY",
+        "quantity": 10,
+        "price": 369.3500061035156,
+        "news_summary": "No significant news reported for the current ticker.",
+        "rationale": "The portfolio is currently empty (0 positions) and holds 100% cash. According to Rule 2, my primary mandate is to enter the market and deploy initial capital. Since the news is neutral/informational, I am proposing a BUY to avoid sitting on 100% cash.",
+        "outcome": "SUCCESSFULLY EXECUTED BUY"
+    }
+]
