@@ -58,8 +58,9 @@ def main():
     # According to the rules, the agent starts with a simulated portfolio.
     # Alpaca already handles the 100k USD paper money, but we define the tickers we care about.
     initial_state = {
-        "portfolio": {}, 
-        "target_tickers": ["AAPL", "MSFT", "GOOGL"], # You can change these to any valid US tickers
+        "portfolio": {},
+        "market_focus": "Innovative Tech and EV",
+        "target_tickers": [], # You can change these to any valid US tickers
         "proposed_decision": None,
         "is_decision_valid": False,
         "last_n_actions": [],
@@ -86,8 +87,12 @@ def main():
             
             # Since target_tickers is a list, we can rotate through them to analyze a different stock each cycle
             # This makes the demo look much more dynamic!
-            current_ticker = current_state["target_tickers"][0]
-            logger.info(f"[SYSTEM] Focusing analysis on: {current_ticker}")
+            tickers = current_state.get("target_tickers", [])
+            if tickers:
+                current_ticker = tickers[0]
+                logger.info(f"[SYSTEM] Focusing analysis on: {current_ticker}")
+            else:
+                logger.info("[SYSTEM] Watchlist is empty. Waiting for EXPLORER to generate target tickers...")
             
             # 3. Invoke the LangGraph workflow
             # We pass the current_state, and the graph returns the updated state after all nodes finish

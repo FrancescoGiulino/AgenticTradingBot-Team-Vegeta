@@ -1,10 +1,9 @@
 import os
 import logging
-
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .state import AgentState, TradeDecision
+from .state import AgentState, TradeDecision, DynamicWatchlist
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
 from .rate_limiter import rate_limiter
 import json
@@ -12,10 +11,9 @@ from datetime import datetime
 import time
 from .db import log_trade_journal
 
-# Initialize the LLM with Google API Key
-# We use temperature=0.0 to make the agent's decisions deterministic and strictly logical
+# Initialize the LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemma-4-26b-a4b-it",
+    model="gemini-3.5-flash",
     api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0.0,
     timeout=60.0,
@@ -25,139 +23,116 @@ llm = ChatGoogleGenerativeAI(
 def init_portfolio(state: AgentState) -> dict:
     """
     Node: INIT_PORTFOLIO
-    Responsible for fetching the current portfolio status from Alpaca
-    and injecting it into the agent's state before the DECISOR runs.
+    Fetches portfolio and dynamically generates a watchlist if empty.
     """
     logger.info("[NODE] INIT_PORTFOLIO: Fetching portfolio data ")
     
     portfolio_data = get_portfolio_status.invoke({})
+    error_msg = portfolio_data.get("error")
     
-    if "error" in portfolio_data:
-        logger.warning(f" [WARNING] INIT_PORTFOLIO encountered an error: {portfolio_data['error']} ")
-        return {
-            "portfolio": {}, 
-            "error_message": portfolio_data["error"]
-        }
+    if error_msg:
+        logger.warning(f" [WARNING] INIT_PORTFOLIO error: {error_msg} ")
+        return {"portfolio": {}, "error_message": error_msg}
+
+    # --- DYNAMIC WATCHLIST GENERATION ---
+    target_tickers = state.get("target_tickers", [])
+    market_focus = state.get("market_focus", "General US Innovative Tech") # Settore di default
     
+    if not target_tickers:
+        logger.info(f"[EXPLORER] Watchlist empty. Generating new dynamic tickers for sector: {market_focus}...")
+        explorer_prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Output MUST follow the JSON schema."),
+            ("human", "Generate tickers for this focus: {focus}")
+        ])
+        
+        explorer_chain = explorer_prompt | llm.with_structured_output(DynamicWatchlist)
+        try:
+            watchlist_result = explorer_chain.invoke({"focus": market_focus})
+            target_tickers = watchlist_result.tickers
+            logger.info(f"[EXPLORER] New Watchlist Created: {target_tickers}. Rationale: {watchlist_result.rationale}")
+        except Exception as e:
+            logger.error(f"[ERROR] EXPLORER failed to generate watchlist: {e}")
+            target_tickers = ["AAPL", "MSFT"] # Fallback di sicurezza in caso di errore LLM
+    # ------------------------------------
+
     return {
         "portfolio": portfolio_data,
+        "target_tickers": target_tickers, # Aggiorniamo lo stato con la nuova watchlist
         "error_message": None 
     }
 
-# Force the LLM to return data exactly matching our Pydantic schema
-# This ensures we never get plain text when we expect a JSON
 decisor_llm = llm.with_structured_output(TradeDecision)
 
 def decisor(state: AgentState) -> dict:
-    """
-    Node: DECISOR
-    Executes the core reasoning logic defined in the hackathon schema:
-    1. Checks portfolio for losses (Proposes SELL).
-    2. Evaluates market data and news (Proposes BUY).
-    3. Otherwise, proposes HOLD.
-    """
+    """Node: DECISOR"""
     logger.info("[NODE] DECISOR: Analyzing market and reasoning ")
     
     portfolio = state.get("portfolio", {})
-    # For now, we pick the first target ticker to analyze
     target_tickers = state.get("target_tickers", ["AAPL"])
     current_ticker = target_tickers[0] if target_tickers else "AAPL"
     
     error_message = state.get("error_message")
     
-    # ANTI-FRAGILE LOGIC: If a previous node failed, we gracefully HOLD
     if error_message:
         logger.warning(f" [WARNING] DECISOR detected an error: {error_message}. Defaulting to HOLD. ")
         fallback_decision = TradeDecision(
-            ticker=current_ticker,
-            action="HOLD",
-            quantity=0,
-            news_summary="N/A",
-            current_price=0.0,
-            rationale=f"System error detected upstream: {error_message}. Safety protocol engaged: proposing HOLD to protect capital."
+            ticker=current_ticker, action="HOLD", quantity=0, news_summary="N/A",
+            current_price=0.0, rationale=f"System error upstream: {error_message}."
         )
         return {"proposed_decision": fallback_decision}
 
-    # Fetch fresh market data using our tool (simulating the 'get finance data' arrow in your diagram)
     price_data = get_stock_price.invoke(current_ticker)
     
-    # Fetch real news using the tool
     logger.info(f"[DECISOR] Fetching news for {current_ticker}... ")
     news_data = get_stock_news.invoke(current_ticker)
     
-    # Prepare the system prompt enforcing your exact business rules
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are an active and strategic AI Trading Agent.
         Your output MUST be based ONLY on the provided data. Do not hallucinate prices or news.
         
         Follow these strict sequential rules to make your decision:
-        1. PORTFOLIO PROTECTION (SELL): If the 'target_ticker' is currently owned and is in loss (unrealized_pl < 0), you MUST propose "SELL".
-        2. INITIAL CAPITAL DEPLOYMENT (BUY): Look at the Portfolio Status. If your portfolio is empty (0 positions) and you have a lot of cash, your primary mandate is to enter the market. If the news for the current ticker is neutral, slightly positive, or just informational, you MUST propose "BUY" (choose a quantity between 5 and 15). Do not sit on 100% cash.
-        3. OPPORTUNISTIC BUY: If you already have positions in the market, propose "BUY" only if the recent news is distinctly positive and encouraging.
-        4. HOLD: If you already have positions and the news is neutral/mixed, or if the news is strictly negative, propose "HOLD".
+        1. PORTFOLIO PROTECTION (SELL): If the 'target_ticker' is currently owned and is in loss (unrealized_pl < 0), you MUST propose "SELL". CRITICAL: Set 'quantity' exactly equal to the number of shares owned in the Portfolio Status.
+        2. INITIAL CAPITAL DEPLOYMENT (BUY): If your portfolio is empty (0 positions) and you have cash, you MUST propose "BUY" (choose an integer quantity between 1 and 3). Do not sit on 100% cash.
+        3. OPPORTUNISTIC BUY: If you have positions, propose "BUY" only if the recent news is distinctly positive and encouraging (choose an integer quantity between 1 and 3).
+        4. HOLD: If news is neutral/negative and you aren't forced to sell, propose "HOLD" and set quantity to 0.
         
-        Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying to deploy initial capital if rule 2 triggers)."""),
-        ("human", """
-        Portfolio Status: {portfolio}
+        Provide a detailed 'rationale' explaining your action."""),
+        ("human", """Portfolio Status: {portfolio}
         Target Ticker: {ticker}
         Current Price Data: {price_data}
         Recent News: {news_data}
         
-        Formulate your final decision.
-        """)
+        Formulate your final decision.""")
     ])
     
-    # Chain the prompt with the structured LLM
     reasoning_chain = prompt | decisor_llm
     
     try:
-        # Roughly estimate tokens for TPM rate limiting (1 token ~ 4 characters)
-        prompt_str = prompt.format(
-            portfolio=portfolio,
-            ticker=current_ticker,
-            price_data=price_data,
-            news_data=news_data
-        )
+        # Rate limiting logic
+        prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data)
         estimated_tokens = len(prompt_str) // 4
-        
         rate_limiter.acquire("google_genai_rpm", 1)
         rate_limiter.acquire("google_genai_tpm", estimated_tokens)
         
-        # Invoke the chain with the gathered data
         decision = reasoning_chain.invoke({
-            "portfolio": portfolio,
-            "ticker": current_ticker,
-            "price_data": price_data,
-            "news_data": news_data
+            "portfolio": portfolio, "ticker": current_ticker, "price_data": price_data, "news_data": news_data
         })
     except Exception as e:
-        # GRACEFUL RECOVERY: If the LLM fails to parse the JSON or crashes
         logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
         decision = TradeDecision(
-            ticker=current_ticker,
-            action="HOLD",
-            quantity=0,
-            news_summary="N/A",
-            current_price=0.0,
-            rationale=f"LLM processing error encountered: {str(e)}. Defaulting to safe action: HOLD."
+            ticker=current_ticker, action="HOLD", quantity=0, news_summary="N/A",
+            current_price=0.0, rationale=f"LLM processing error: {str(e)}."
         )
 
     return {"proposed_decision": decision}
 
 def checker(state: AgentState) -> dict:
-    """
-    Node: CHECKER
-    Validates the proposed decision against hard portfolio constraints:
-    - BUY: Checks if there is enough cash to cover the purchase.
-    - SELL: Checks if the portfolio actually holds enough quantity of the ticker.
-    - HOLD: Automatically accepted.
-    """
+    """Node: CHECKER"""
     logger.info("[NODE] CHECKER: Validating feasibility of the decision ")
     
     decision = state.get("proposed_decision")
     portfolio = state.get("portfolio", {})
     
-    # If for some reason there is no decision, we reject and stop.
     if not decision:
         logger.error("[ERROR] CHECKER: No decision found to validate. ")
         return {"is_decision_valid": False}
@@ -170,12 +145,10 @@ def checker(state: AgentState) -> dict:
         logger.info(f"[CHECKER] REJECTED: Quantity must be > 0. Proposed quantity is {quantity}. ")
         return {"is_decision_valid": False}
     
-    # HOLD is always feasible
     if action == "HOLD":
         logger.info("[CHECKER] Action is HOLD. Accepted automatically. ")
         return {"is_decision_valid": True}
         
-    # SELL logic: Do we actually own the shares?
     elif action == "SELL":
         positions = portfolio.get("positions", {})
         if ticker in positions and positions[ticker]["qty"] >= quantity:
@@ -185,69 +158,44 @@ def checker(state: AgentState) -> dict:
             logger.info(f"[CHECKER] REJECTED: Not enough shares of {ticker} to sell. ")
             return {"is_decision_valid": False}
             
-    # BUY logic: Do we have enough cash?
     elif action == "BUY":
         cash_available = portfolio.get("cash", 0.0)
-        # We estimate the cost using the current price provided by the DECISOR
         estimated_cost = quantity * decision.current_price
-        
         if cash_available >= estimated_cost:
             logger.info(f"[CHECKER] Sufficient cash to BUY {quantity} {ticker}. Accepted. ")
             return {"is_decision_valid": True}
         else:
-            logger.info(f"[CHECKER] REJECTED: Insufficient cash. Need {estimated_cost}, have {cash_available}. ")
+            logger.info(f"[CHECKER] REJECTED: Insufficient cash. ")
             return {"is_decision_valid": False}
             
-    # Fallback for unexpected actions
-    logger.warning(f"[WARNING] CHECKER: Unrecognized action '{action}'. Rejected. ")
     return {"is_decision_valid": False}
 
 def executer(state: AgentState) -> dict:
-    """
-    Node: EXECUTER
-    Executes the validated trade decision using the Alpaca API.
-    Bypasses execution if the decision was HOLD or if the CHECKER rejected it.
-    """
+    """Node: EXECUTER"""
     logger.info("[NODE] EXECUTER: Executing the trade ")
     
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
     
-    # 1. Skip execution if invalid, missing, or just a HOLD
     if not is_valid or not decision or decision.action.upper() == "HOLD":
         logger.info("[EXECUTER] No execution required (Action is HOLD or Invalid). ")
-        return {} # No changes to the state
+        return {} 
         
     logger.info(f"[EXECUTER] Sending order to Alpaca: {decision.action} {decision.quantity} {decision.ticker} ")
     
-    # 2. Call the execution tool
     execution_result = execute_trade.invoke({
-        "ticker": decision.ticker,
-        "action": decision.action,
-        "quantity": decision.quantity
+        "ticker": decision.ticker, "action": decision.action, "quantity": decision.quantity
     })
     
-    # 3. Handle execution errors (Anti-Fragile logic)
     if "error" in execution_result:
         logger.error(f"[ERROR] EXECUTER failed: {execution_result['error']} ")
-        # Save the error in the state so the Summarizer/Journal can log the failure
         return {"error_message": execution_result["error"]}
         
     logger.info(f"[EXECUTER] Order successful! Order ID: {execution_result.get('order_id')} ")
-    
-    # Clear any previous errors if successful
     return {"error_message": None}
 
 def summarizer(state: AgentState) -> dict:
-    """
-    Node: SUMMARIZER
-    Manages short-term memory and logs every cycle into a persistent Trade Journal.
-    Steps:
-    1. Formats a structured log entry based on the current state and execution outcomes.
-    2. Appends the entry to a local JSON file (the persistent journal).
-    3. Updates the 'last_n_actions' rolling list (memory layer).
-    4. Clears temporary/heavy data to provide a clean state for the next iteration.
-    """
+    """Node: SUMMARIZER"""
     logger.info("[NODE] SUMMARIZER: Logging journal and cleaning state ")
     
     decision = state.get("proposed_decision")
@@ -255,21 +203,18 @@ def summarizer(state: AgentState) -> dict:
     error_message = state.get("error_message")
     last_n = state.get("last_n_actions", [])
     
-    # Define max memory size for rolling actions
+    # DYNAMIC WATCHLIST MANAGEMENT: Remove the ticker we just processed
+    target_tickers = list(state.get("target_tickers", []))
+    if target_tickers:
+        target_tickers.pop(0) # Pop the first item off the list
+    
     MAX_N = 5
     
-    # 1. Determine the final status/outcome of the cycle
-    if error_message:
-        outcome = f"FAILED: {error_message}"
-    elif not is_valid and decision:
-        outcome = "REJECTED BY CHECKER"
-    elif decision:
-        outcome = f"SUCCESSFULLY EXECUTED {decision.action}"
-    else:
-        outcome = "UNKNOWN / NO DECISION"
+    if error_message: outcome = f"FAILED: {error_message}"
+    elif not is_valid and decision: outcome = "REJECTED BY CHECKER"
+    elif decision: outcome = f"SUCCESSFULLY EXECUTED {decision.action}"
+    else: outcome = "UNKNOWN / NO DECISION"
 
-    # 2. Construct the journal entry for state memory
-    # Using fallback values if no decision was formulated due to upstream crashes
     journal_entry = {
         "timestamp": datetime.now().isoformat(),
         "ticker": decision.ticker if decision else "N/A",
@@ -281,42 +226,26 @@ def summarizer(state: AgentState) -> dict:
         "outcome": outcome
     }
     
-    # 3. Persist the journal entry into the SQLite database instead of JSON
     cycle_id = state.get("cycle_id") or f"cycle-{int(time.time())}"
     success = log_trade_journal(
-        cycle_id=cycle_id,
-        agent_type="decisor",
-        ticker=journal_entry["ticker"],
-        action=journal_entry["action"],
-        quantity=journal_entry["quantity"],
-        price=journal_entry["price"],
-        news_summary=journal_entry["news_summary"],
-        rationale=journal_entry["rationale"],
-        outcome=journal_entry["outcome"],
+        cycle_id=cycle_id, agent_type="decisor", ticker=journal_entry["ticker"],
+        action=journal_entry["action"], quantity=journal_entry["quantity"],
+        price=journal_entry["price"], news_summary=journal_entry["news_summary"],
+        rationale=journal_entry["rationale"], outcome=journal_entry["outcome"],
         data_sources="Alpaca, yfinance"
     )
-    if success:
-        logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
-    else:
-        logger.warning(f"[WARNING] SUMMARIZER failed to log trade to SQLite database")
     
-    # 4. Update the rolling memory (last_n_actions)
-    # Create a shallow copy, append the new summary, and keep only the latest MAX_N items
+    if success: logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
+    
     updated_last_n = list(last_n)
-    updated_last_n.append({
-        "ticker": journal_entry["ticker"],
-        "action": journal_entry["action"],
-        "outcome": journal_entry["outcome"]
-    })
-    if len(updated_last_n) > MAX_N:
-        updated_last_n.pop(0) # Remove the oldest action from the head of the list
+    updated_last_n.append({"ticker": journal_entry["ticker"], "action": journal_entry["action"], "outcome": journal_entry["outcome"]})
+    if len(updated_last_n) > MAX_N: updated_last_n.pop(0)
 
-    # 5. State Cleanup: return updates. 
-    # Returning None for temporary flags resets them for the next loop iteration.
     return {
+        "target_tickers": target_tickers, # 🟢 Restituiamo la lista aggiornata (accorciata) per il prossimo ciclo
         "last_n_actions": updated_last_n,
-        "journal": [journal_entry], # Appended automatically via operator.add
-        "proposed_decision": None,  # Resetting for a clean state next turn
-        "is_decision_valid": False, # Resetting for a clean state next turn
-        "error_message": None       # Clearing error state for the next cycle
+        "journal": [journal_entry], 
+        "proposed_decision": None,  
+        "is_decision_valid": False, 
+        "error_message": None       
     }
