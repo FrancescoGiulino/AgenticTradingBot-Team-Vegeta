@@ -95,6 +95,17 @@ def init_db():
             )
         """)
 
+        # 4. Portfolio History Table (For Dashboard Charts)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS portfolio_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                cycle_id TEXT,
+                total_value REAL,
+                cash REAL
+            )
+        """)
+
         conn.commit()
         cursor.close()
         logger.info("[DATABASE] Tables verified/created successfully.")
@@ -160,4 +171,23 @@ def log_system_event(agent_node: str, event_type: str, message: str) -> bool:
         return True
     except Exception as e:
         logger.error(f"[DATABASE ERROR] Failed to log system event: {str(e)}")
+        return False
+
+def log_portfolio_history(cycle_id: str, total_value: float, cash: float) -> bool:
+    """
+    Logs the portfolio value and cash balance.
+    Returns True if successful, False otherwise.
+    """
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO portfolio_history (cycle_id, total_value, cash)
+            VALUES (?, ?, ?)
+        """, (cycle_id, total_value, cash))
+        conn.commit()
+        cursor.close()
+        return True
+    except Exception as e:
+        logger.error(f"[DATABASE ERROR] Failed to log portfolio history: {str(e)}")
         return False

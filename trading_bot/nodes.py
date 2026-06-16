@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.callbacks import BaseCallbackHandler
 from .state import AgentState, TradeDecision
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
 from .rate_limiter import rate_limiter
@@ -12,14 +13,33 @@ from datetime import datetime
 import time
 from .db import log_trade_journal
 
+class FileStreamCallbackHandler(BaseCallbackHandler):
+    def __init__(self, file_path):
+        self.file_path = file_path
+        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+        
+    def on_llm_start(self, serialized: dict, prompts: list, **kwargs) -> None:
+        with open(self.file_path, "a", encoding="utf-8") as f:
+            f.write("\n[DECISOR]\n")
+            f.flush()
+
+    def on_llm_new_token(self, token: str, **kwargs) -> None:
+        with open(self.file_path, "a", encoding="utf-8") as f:
+            f.write(token)
+            f.flush()
+
+stream_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "shared", "thinking_stream.txt")
+stream_handler = FileStreamCallbackHandler(stream_file_path)
+
 # Initialize the LLM with Google API Key
 # We use temperature=0.0 to make the agent's decisions deterministic and strictly logical
 llm = ChatGoogleGenerativeAI(
-    model="gemma-4-26b-a4b-it",
+    model="gemma-4-31b-it",
     api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0.0,
-    timeout=60.0,
-    max_retries=1
+    max_retries=1,
+    streaming=True,
+    callbacks=[stream_handler]
 )
 
 def init_portfolio(state: AgentState) -> dict:
@@ -29,7 +49,9 @@ def init_portfolio(state: AgentState) -> dict:
     and injecting it into the agent's state before the DECISOR runs.
     """
     logger.info("[NODE] INIT_PORTFOLIO: Fetching portfolio data ")
-    
+    with open(stream_file_path, "a", encoding="utf-8") as f:
+        f.write(f"\n[INIT_PORTFOLIO]\nFetching current portfolio status from Alpaca...\n")
+        
     portfolio_data = get_portfolio_status.invoke({})
     
     if "error" in portfolio_data:
@@ -85,6 +107,13 @@ def decisor(state: AgentState) -> dict:
     logger.info(f"[DECISOR] Fetching news for {current_ticker}... ")
     news_data = get_stock_news.invoke(current_ticker)
     
+    # Load configuration
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+    user_config = {}
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            user_config = json.load(f)
+    
     # Prepare the system prompt enforcing your exact business rules
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are an active and strategic AI Trading Agent.
@@ -95,6 +124,13 @@ def decisor(state: AgentState) -> dict:
         2. INITIAL CAPITAL DEPLOYMENT (BUY): Look at the Portfolio Status. If your portfolio is empty (0 positions) and you have a lot of cash, your primary mandate is to enter the market. If the news for the current ticker is neutral, slightly positive, or just informational, you MUST propose "BUY" (choose a quantity between 5 and 15). Do not sit on 100% cash.
         3. OPPORTUNISTIC BUY: If you already have positions in the market, propose "BUY" only if the recent news is distinctly positive and encouraging.
         4. HOLD: If you already have positions and the news is neutral/mixed, or if the news is strictly negative, propose "HOLD".
+        5. WANTED ACTION: If the 'wanted_action' field in the user configuration contains a specific command (e.g., "sell all google stocks"), you MUST prioritize executing it.
+        
+        CRITICAL CONSTRAINT: You cannot "SELL" 0 shares or "BUY" 0 shares. If your calculated quantity for a BUY or SELL is 0, you MUST propose "HOLD" instead.
+        
+        USER CONFIGURATION AND FEEDBACK CONSTRAINTS:
+        Consider these constraints set by the user: {user_config}
+        Ensure your actions comply with the minimum liquidity and user feedback guidelines provided in the configuration.
         
         Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying to deploy initial capital if rule 2 triggers)."""),
         ("human", """
@@ -116,7 +152,8 @@ def decisor(state: AgentState) -> dict:
             portfolio=portfolio,
             ticker=current_ticker,
             price_data=price_data,
-            news_data=news_data
+            news_data=news_data,
+            user_config=json.dumps(user_config)
         )
         estimated_tokens = len(prompt_str) // 4
         
@@ -128,11 +165,12 @@ def decisor(state: AgentState) -> dict:
             "portfolio": portfolio,
             "ticker": current_ticker,
             "price_data": price_data,
-            "news_data": news_data
+            "news_data": news_data,
+            "user_config": json.dumps(user_config)
         })
     except Exception as e:
         # GRACEFUL RECOVERY: If the LLM fails to parse the JSON or crashes
-        logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
+        logger.error(f"[ERROR] DECISOR LLM failed: {str(e)} ")
         decision = TradeDecision(
             ticker=current_ticker,
             action="HOLD",
@@ -154,6 +192,9 @@ def checker(state: AgentState) -> dict:
     """
     logger.info("[NODE] CHECKER: Validating feasibility of the decision ")
     
+    with open(stream_file_path, "a", encoding="utf-8") as f:
+        f.write(f"\n[CHECKER]\nValidating feasibility of the proposed decision...\n")
+        
     decision = state.get("proposed_decision")
     portfolio = state.get("portfolio", {})
     
@@ -210,6 +251,9 @@ def executer(state: AgentState) -> dict:
     """
     logger.info("[NODE] EXECUTER: Executing the trade ")
     
+    with open(stream_file_path, "a", encoding="utf-8") as f:
+        f.write(f"\n[EXECUTER]\nPreparing to execute the trade on Alpaca...\n")
+        
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
     
@@ -250,6 +294,9 @@ def summarizer(state: AgentState) -> dict:
     """
     logger.info("[NODE] SUMMARIZER: Logging journal and cleaning state ")
     
+    with open(stream_file_path, "a", encoding="utf-8") as f:
+        f.write(f"\n[SUMMARIZER]\nLogging cycle outcome to Trade Journal and cleaning state...\n")
+        
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
     error_message = state.get("error_message")
@@ -313,6 +360,9 @@ def summarizer(state: AgentState) -> dict:
 
     # 5. State Cleanup: return updates. 
     # Returning None for temporary flags resets them for the next loop iteration.
+    with open(stream_file_path, "a", encoding="utf-8") as f:
+        f.write("\n[END]\n")
+        
     return {
         "last_n_actions": updated_last_n,
         "journal": [journal_entry], # Appended automatically via operator.add
