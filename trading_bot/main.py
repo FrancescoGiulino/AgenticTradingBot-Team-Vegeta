@@ -3,6 +3,7 @@ from .graph import app
 from .db import init_db
 from datetime import datetime
 from dotenv import load_dotenv
+from .rate_limiter import rate_limiter
 
 # Load API keys from .env just to be safe, though tools.py already does it
 load_dotenv()
@@ -19,6 +20,9 @@ def main():
     
     # Initialize the SQLite database
     init_db()
+    
+    # Load Rate Limits Configuration
+    rate_limiter.load_config("rate_limits.json")
     
     # 1. Initialize the starting state
     # According to the rules, the agent starts with a simulated portfolio.
