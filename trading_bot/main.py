@@ -1,11 +1,12 @@
 import time
+from .graph import app
+from .db import init_db
 from datetime import datetime
 from dotenv import load_dotenv
 from .rate_limiter import rate_limiter
 
 # Load API keys from .env just to be safe, though tools.py already does it
 load_dotenv()
-from .graph import app
 
 def print_header():
     print("=" * 60)
