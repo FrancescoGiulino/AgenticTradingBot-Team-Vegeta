@@ -2,21 +2,7 @@ import time
 from .graph import app
 from datetime import datetime
 from dotenv import load_dotenv
-from .rate_limiter import rate_limiter
 
-# Load API keys from .env just to be safe, though tools.py already does it
-load_dotenv()
-
-def print_header():
-    print("=" * 60)
-    print("STARTING AGENTIC AI TRADING BOT")
-    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("Target Ambition: Level 3 (Autonomous Loop)")
-    print("=" * 60)
-
-def main():
-    print_header()
-    
     # Load Rate Limits Configuration
     rate_limiter.load_config("rate_limits.json")
     
