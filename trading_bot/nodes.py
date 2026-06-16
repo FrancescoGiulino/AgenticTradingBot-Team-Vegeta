@@ -9,13 +9,17 @@ from .tools import get_portfolio_status, get_stock_price, execute_trade, get_sto
 from .rate_limiter import rate_limiter
 import json
 from datetime import datetime
+import time
+from .db import log_trade_journal
 
 # Initialize the LLM with Google API Key
 # We use temperature=0.0 to make the agent's decisions deterministic and strictly logical
 llm = ChatGoogleGenerativeAI(
     model="gemma-4-26b-a4b-it",
     api_key=os.getenv("GOOGLE_API_KEY"),
-    temperature=0.0
+    temperature=0.0,
+    timeout=60.0,
+    max_retries=1
 )
 
 def init_portfolio(state: AgentState) -> dict:
@@ -24,7 +28,7 @@ def init_portfolio(state: AgentState) -> dict:
     Responsible for fetching the current portfolio status from Alpaca
     and injecting it into the agent's state before the DECISOR runs.
     """
-    logger.info(" [NODE] INIT_PORTFOLIO: Fetching portfolio data ")
+    logger.info("[NODE] INIT_PORTFOLIO: Fetching portfolio data ")
     
     portfolio_data = get_portfolio_status.invoke({})
     
@@ -52,7 +56,7 @@ def decisor(state: AgentState) -> dict:
     2. Evaluates market data and news (Proposes BUY).
     3. Otherwise, proposes HOLD.
     """
-    logger.info(" [NODE] DECISOR: Analyzing market and reasoning ")
+    logger.info("[NODE] DECISOR: Analyzing market and reasoning ")
     
     portfolio = state.get("portfolio", {})
     # For now, we pick the first target ticker to analyze
@@ -161,6 +165,10 @@ def checker(state: AgentState) -> dict:
     action = decision.action.upper()
     ticker = decision.ticker
     quantity = decision.quantity
+    
+    if action in ["BUY", "SELL"] and quantity <= 0:
+        logger.info(f"[CHECKER] REJECTED: Quantity must be > 0. Proposed quantity is {quantity}. ")
+        return {"is_decision_valid": False}
     
     # HOLD is always feasible
     if action == "HOLD":

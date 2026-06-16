@@ -122,8 +122,6 @@ def get_stock_news(ticker: str) -> dict:
         
         # Extract the list of articles
         news_items = news_response.news
-        stock = yf.Ticker(ticker)
-        news_items = stock.news
         
         if not news_items:
             return {"news": f"No recent news found for {clean_ticker}."}

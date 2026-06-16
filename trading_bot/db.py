@@ -2,6 +2,9 @@ import sqlite3
 import os
 import sys
 import atexit
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Name of the database file
 DB_NAME = "trading_agent.db"
@@ -20,7 +23,7 @@ def get_connection():
             # check_same_thread=False allows sharing the connection across threads if needed
             _conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         except Exception as e:
-            print(f"--- [DATABASE ERROR] Failed to connect to SQLite: {str(e)} ---", file=sys.stderr)
+            logger.error(f"[DATABASE ERROR] Failed to connect to SQLite: {str(e)}")
             raise e
     return _conn
 
@@ -34,9 +37,9 @@ def close_connection():
     if _conn is not None:
         try:
             _conn.close()
-            print("--- [DATABASE] Singleton connection closed cleanly. ---")
+            logger.info("[DATABASE] Singleton connection closed cleanly.")
         except Exception as e:
-            print(f"--- [DATABASE ERROR] Failed to close connection cleanly: {str(e)} ---", file=sys.stderr)
+            logger.error(f"[DATABASE ERROR] Failed to close connection cleanly: {str(e)}")
         finally:
             _conn = None
 
@@ -45,7 +48,7 @@ def init_db():
     Initializes the SQLite database, creating the necessary tables if they do not exist.
     This operation is wrapped in a try-except block to prevent crashes.
     """
-    print(f"--- [DATABASE] Initializing database '{DB_NAME}' ---")
+    logger.info(f"[DATABASE] Initializing database '{DB_NAME}'")
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -94,9 +97,9 @@ def init_db():
 
         conn.commit()
         cursor.close()
-        print("--- [DATABASE] Tables verified/created successfully. ---")
+        logger.info("[DATABASE] Tables verified/created successfully.")
     except Exception as e:
-        print(f"--- [DATABASE ERROR] Failed to initialize database: {str(e)} ---", file=sys.stderr)
+        logger.error(f"[DATABASE ERROR] Failed to initialize database: {str(e)}")
 
 
 def log_market_observation(cycle_id: str, ticker: str, current_price: float, news_summary: str, sentiment_score: str) -> bool:
@@ -115,7 +118,7 @@ def log_market_observation(cycle_id: str, ticker: str, current_price: float, new
         cursor.close()
         return True
     except Exception as e:
-        print(f"--- [DATABASE ERROR] Failed to log market observation: {str(e)} ---", file=sys.stderr)
+        logger.error(f"[DATABASE ERROR] Failed to log market observation: {str(e)}")
         return False
 
 
@@ -136,7 +139,7 @@ def log_trade_journal(cycle_id: str, agent_type: str, ticker: str, action: str, 
         cursor.close()
         return True
     except Exception as e:
-        print(f"--- [DATABASE ERROR] Failed to log trade journal: {str(e)} ---", file=sys.stderr)
+        logger.error(f"[DATABASE ERROR] Failed to log trade journal: {str(e)}")
         return False
 
 
@@ -156,5 +159,5 @@ def log_system_event(agent_node: str, event_type: str, message: str) -> bool:
         cursor.close()
         return True
     except Exception as e:
-        print(f"--- [DATABASE ERROR] Failed to log system event: {str(e)} ---", file=sys.stderr)
+        logger.error(f"[DATABASE ERROR] Failed to log system event: {str(e)}")
         return False

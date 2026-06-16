@@ -48,6 +48,9 @@ def print_header():
 def main():
     print_header()
     
+    # Initialize Database
+    init_db()
+    
     # Load Rate Limits Configuration
     rate_limiter.load_config("rate_limits.json")
     
@@ -79,7 +82,7 @@ def main():
         logger.info("[SYSTEM] Entering Autonomous Mode. Press Ctrl+C to stop.")
         
         while True:
-            logger.info(f" STARTING CYCLE {cycle_count} ")
+            logger.info(f"STARTING CYCLE {cycle_count} ")
             
             # Since target_tickers is a list, we can rotate through them to analyze a different stock each cycle
             # This makes the demo look much more dynamic!
@@ -111,6 +114,8 @@ def main():
         logger.warning("AGENT STOPPED BY USER")
         logger.warning("Finalizing logs and shutting down safely.")
         logger.warning("=" * 60)
+        import sys
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
