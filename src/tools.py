@@ -5,6 +5,13 @@ from langchain_core.tools import tool
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
+from alpaca.data.historical.news import NewsClient
+from alpaca.data.requests import NewsRequest
+
+news_client = NewsClient(
+    api_key=os.getenv("ALPACA_API_KEY"), 
+    secret_key=os.getenv("ALPACA_SECRET_KEY")
+)
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -91,20 +98,34 @@ def execute_trade(ticker: str, action: str, quantity: int) -> dict:
 @tool
 def get_stock_news(ticker: str) -> dict:
     """
-    Fetches the latest news headlines for a given ticker.
-    Useful for sentiment analysis to decide whether to BUY or SELL.
+    Fetches the latest real financial news headlines for a given ticker 
+    using the official Alpaca News API (Benzinga integration).
     """
     try:
-        stock = yf.Ticker(ticker)
-        news_items = stock.news
+        # Convert hyphen (used for Yahoo) back to the original slash for Alpaca
+        clean_ticker = ticker.replace("-", "/")
+        
+        # Prepare the request for the latest 3 news articles for this ticker
+        request_params = NewsRequest(
+            symbols=clean_ticker,
+            limit=3,
+            include_content=False # Fetch only headlines to avoid overwhelming the LLM
+        )
+        
+        # Fetch the actual news using the API
+        news_response = news_client.get_news(request_params)
+        
+        # Extract the list of articles
+        news_items = news_response.news
         
         if not news_items:
-            return {"news": f"No recent news found for {ticker}."}
+            return {"news": f"No recent news found for {clean_ticker}."}
         
-        # Extract the titles of the top 3 news articles
-        titles = [item.get("title", "") for item in news_items[:3]]
+        # Extract only the headlines
+        titles = [item.headline for item in news_items]
         combined_news = " | ".join(titles)
         
         return {"news": combined_news}
+        
     except Exception as e:
-        return {"error": f"Failed to fetch news for {ticker}: {str(e)}"}
+        return {"error": f"Failed to fetch Alpaca news for {ticker}: {str(e)}"}

@@ -1,10 +1,9 @@
 import time
-from graph import app
 from datetime import datetime
 from dotenv import load_dotenv
-
 # Load API keys from .env just to be safe, though tools.py already does it
 load_dotenv()
+from graph import app
 
 def print_header():
     print("=" * 60)
