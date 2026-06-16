@@ -184,3 +184,6 @@ yfinance==1.4.1
 
 zstandard==0.25.0
 
+streamlit>=1.30.0
+streamlit-autorefresh>=1.0.1
+pandas>=2.0.0

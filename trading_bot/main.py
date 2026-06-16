@@ -71,6 +71,12 @@ def main():
     # Load Rate Limits Configuration
     rate_limiter.load_config("rate_limits.json")
     
+    import json
+    import os
+    from .db import log_portfolio_history
+
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+    
     initial_state = {
         "portfolio": {},
         "market_focus": "Innovative Tech and EV",
@@ -79,10 +85,12 @@ def main():
         "is_decision_valid": False,
         "last_n_actions": [],
         "journal": [],
-        "error_message": None
+        "error_message": None,
+        "cycle_id": None
     }
     
     current_state = initial_state
+
     CYCLE_DELAY_SECONDS = 5 
     cycle_count = 1
     
@@ -99,6 +107,23 @@ def main():
         while True:
             logger.info(f"STARTING CYCLE {cycle_count} ")
             
+            # Read configuration.json to sync preferred_sectors from GUI with shared_config
+            if os.path.exists(config_path):
+                try:
+                    with open(config_path, "r") as f:
+                        user_config = json.load(f)
+                        preferred_sectors = user_config.get("preferred_sectors", [])
+                        if preferred_sectors:
+                            new_focus = preferred_sectors[0]
+                            if new_focus != shared_config.market_focus:
+                                logger.info(f"[GUI SYNC] Syncing focus to: {new_focus}")
+                                shared_config.update_focus(new_focus)
+                except Exception as e:
+                    logger.error(f"[ERROR] Failed to read configuration.json: {e}")
+
+            # Generate a unique cycle ID
+            current_state["cycle_id"] = f"cycle-{cycle_count}-{int(time.time())}"
+
             tickers = current_state.get("target_tickers", [])
             if tickers:
                 current_ticker = tickers[0]
@@ -112,10 +137,16 @@ def main():
             # 4. Update our main state tracker (NESSUNA ROTAZIONE NECESSARIA)
             current_state = updated_state
             
+            # Log Portfolio History
+            portfolio = current_state.get("portfolio", {})
+            total_value = portfolio.get("portfolio_value", 0.0)
+            cash = portfolio.get("cash", 0.0)
+            if total_value > 0 or cash > 0:
+                log_portfolio_history(current_state["cycle_id"], total_value, cash)
+            
             logger.info(f"CYCLE {cycle_count} COMPLETE ")
             logger.info(f"[SYSTEM] Sleeping for {CYCLE_DELAY_SECONDS} seconds before next cycle...")
             
-            # 5. Wait before the next loop
             time.sleep(CYCLE_DELAY_SECONDS)
             cycle_count += 1
 
