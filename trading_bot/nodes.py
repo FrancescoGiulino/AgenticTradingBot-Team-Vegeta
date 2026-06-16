@@ -10,6 +10,7 @@ import json
 from datetime import datetime
 import time
 from .db import log_trade_journal
+from .config import shared_config
 
 # Initialize the LLM
 llm = ChatGoogleGenerativeAI(
@@ -23,7 +24,7 @@ llm = ChatGoogleGenerativeAI(
 def init_portfolio(state: AgentState) -> dict:
     """
     Node: INIT_PORTFOLIO
-    Fetches portfolio and dynamically generates a watchlist if empty.
+    Fetches portfolio, checks for user interruptions, and generates a watchlist.
     """
     logger.info("[NODE] INIT_PORTFOLIO: Fetching portfolio data ")
     
@@ -34,12 +35,18 @@ def init_portfolio(state: AgentState) -> dict:
         logger.warning(f" [WARNING] INIT_PORTFOLIO error: {error_msg} ")
         return {"portfolio": {}, "error_message": error_msg}
 
-    # --- DYNAMIC WATCHLIST GENERATION ---
-    target_tickers = state.get("target_tickers", [])
-    market_focus = state.get("market_focus", "General US Innovative Tech") # Settore di default
+    # 1. Leggiamo la memoria condivisa per vedere se l'utente ha inserito comandi
+    current_focus, has_changed = shared_config.get_focus_and_reset_flag()
+    target_tickers = list(state.get("target_tickers", []))
     
+    # 2. Se l'utente ha cambiato focus, FORZIAMO lo svuotamento della watchlist
+    if has_changed:
+        logger.info(f"--- [SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist! ---")
+        target_tickers = [] # Questo costringerà l'Esploratore ad attivarsi
+        
+    # 3. DYNAMIC WATCHLIST GENERATION
     if not target_tickers:
-        logger.info(f"[EXPLORER] Watchlist empty. Generating new dynamic tickers for sector: {market_focus}...")
+        logger.info(f"[EXPLORER] Watchlist empty. Generating new dynamic tickers for sector: {current_focus}...")
         explorer_prompt = ChatPromptTemplate.from_messages([
             ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Output MUST follow the JSON schema."),
             ("human", "Generate tickers for this focus: {focus}")
@@ -47,17 +54,17 @@ def init_portfolio(state: AgentState) -> dict:
         
         explorer_chain = explorer_prompt | llm.with_structured_output(DynamicWatchlist)
         try:
-            watchlist_result = explorer_chain.invoke({"focus": market_focus})
+            watchlist_result = explorer_chain.invoke({"focus": current_focus})
             target_tickers = watchlist_result.tickers
             logger.info(f"[EXPLORER] New Watchlist Created: {target_tickers}. Rationale: {watchlist_result.rationale}")
         except Exception as e:
             logger.error(f"[ERROR] EXPLORER failed to generate watchlist: {e}")
-            target_tickers = ["AAPL", "MSFT"] # Fallback di sicurezza in caso di errore LLM
-    # ------------------------------------
+            target_tickers = ["AAPL", "MSFT"] # Fallback
 
     return {
         "portfolio": portfolio_data,
-        "target_tickers": target_tickers, # Aggiorniamo lo stato con la nuova watchlist
+        "target_tickers": target_tickers,
+        "market_focus": current_focus, # Salviamo il focus aggiornato nello stato
         "error_message": None 
     }
 
