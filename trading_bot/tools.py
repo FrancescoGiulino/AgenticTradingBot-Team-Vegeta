@@ -8,18 +8,18 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.data.historical.news import NewsClient
 from alpaca.data.requests import NewsRequest
 
-news_client = NewsClient(
-    api_key=os.getenv("ALPACA_API_KEY"), 
-    secret_key=os.getenv("ALPACA_SECRET_KEY")
-)
-from .rate_limiter import rate_limiter
-
 # Load environment variables from the .env file
 load_dotenv()
 
 # Retrieve Alpaca keys
 ALPACA_API_KEY = os.getenv("ALPACA_API_KEY")
 ALPACA_SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
+
+news_client = NewsClient(
+    api_key=ALPACA_API_KEY, 
+    secret_key=ALPACA_SECRET_KEY
+)
+from .rate_limiter import rate_limiter
 
 # Initialize Alpaca Trading Client (paper=True is mandatory for the simulation)
 trading_client = TradingClient(ALPACA_API_KEY, ALPACA_SECRET_KEY, paper=True)

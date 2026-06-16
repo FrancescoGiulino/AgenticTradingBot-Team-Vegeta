@@ -289,8 +289,8 @@ def summarizer(state: AgentState) -> dict:
     )
     if success:
         logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
-    except Exception as e:
-        logger.warning(f"[WARNING] SUMMARIZER failed to log trade to SQLite database err: {str(e)} ")
+    else:
+        logger.warning(f"[WARNING] SUMMARIZER failed to log trade to SQLite database")
     
     # 4. Update the rolling memory (last_n_actions)
     # Create a shallow copy, append the new summary, and keep only the latest MAX_N items
