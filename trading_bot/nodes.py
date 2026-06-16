@@ -1,6 +1,8 @@
 import os
 import logging
 
+from trading_bot.knowledge_manager import knowledge_base
+
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -12,12 +14,13 @@ from datetime import datetime
 import time
 from .db import log_trade_journal
 
+
 # Initialize the LLM with Google API Key
 # We use temperature=0.0 to make the agent's decisions deterministic and strictly logical
 llm = ChatGoogleGenerativeAI(
-    model="gemma-4-26b-a4b-it",
+    model="gemma-4-31b-it",
     api_key=os.getenv("GOOGLE_API_KEY"),
-    temperature=0.0,
+    temperature=0.15,
     timeout=60.0,
     max_retries=1
 )
@@ -84,18 +87,16 @@ def decisor(state: AgentState) -> dict:
     # Fetch real news using the tool
     logger.info(f"[DECISOR] Fetching news for {current_ticker}... ")
     news_data = get_stock_news.invoke(current_ticker)
-    
+
+    prompt_info = knowledge_base.get_knowledge("the_intelligent_investor.txt")
+
     # Prepare the system prompt enforcing your exact business rules
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an active and strategic AI Trading Agent.
+        ("system", f"""You are an active and strategic AI Trading Agent.
         Your output MUST be based ONLY on the provided data. Do not hallucinate prices or news.
         
-        Follow these strict sequential rules to make your decision:
-        1. PORTFOLIO PROTECTION (SELL): If the 'target_ticker' is currently owned and is in loss (unrealized_pl < 0), you MUST propose "SELL".
-        2. INITIAL CAPITAL DEPLOYMENT (BUY): Look at the Portfolio Status. If your portfolio is empty (0 positions) and you have a lot of cash, your primary mandate is to enter the market. If the news for the current ticker is neutral, slightly positive, or just informational, you MUST propose "BUY" (choose a quantity between 5 and 15). Do not sit on 100% cash.
-        3. OPPORTUNISTIC BUY: If you already have positions in the market, propose "BUY" only if the recent news is distinctly positive and encouraging.
-        4. HOLD: If you already have positions and the news is neutral/mixed, or if the news is strictly negative, propose "HOLD".
-        
+        {prompt_info}
+
         Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying to deploy initial capital if rule 2 triggers)."""),
         ("human", """
         Portfolio Status: {portfolio}

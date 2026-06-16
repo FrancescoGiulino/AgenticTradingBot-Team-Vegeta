@@ -1,5 +1,6 @@
 import os
 import yfinance as yf
+import logging
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 from alpaca.trading.client import TradingClient
@@ -7,6 +8,8 @@ from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.data.historical.news import NewsClient
 from alpaca.data.requests import NewsRequest
+
+logger = logging.getLogger(__name__)
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -100,38 +103,64 @@ def execute_trade(ticker: str, action: str, quantity: int) -> dict:
         return {"error": f"Order execution failed: {str(e)}"}
 
 @tool
-def get_stock_news(ticker: str) -> dict:
+def get_stock_news(ticker: str) -> str:
     """
     Fetches the latest real financial news headlines for a given ticker 
-    using the official Alpaca News API (Benzinga integration).
+    using the official Alpaca News API.
+    Returns a clean string formatted specifically for the LLM.
     """
     try:
         rate_limiter.acquire("yfinance_rpm")
-        # Convert hyphen (used for Yahoo) back to the original slash for Alpaca
         clean_ticker = ticker.replace("-", "/")
         
-        # Prepare the request for the latest 3 news articles for this ticker
         request_params = NewsRequest(
             symbols=clean_ticker,
             limit=3,
-            include_content=False # Fetch only headlines to avoid overwhelming the LLM
+            include_content=False 
         )
         
-        # Fetch the actual news using the API
         news_response = news_client.get_news(request_params)
         
-        # Extract the list of articles
-        news_items = news_response.news
+        news_items = []
         
-        if not news_items:
-            return {"news": f"No recent news found for {clean_ticker}."}
+        # Caso A: L'oggetto è già una lista
+        if isinstance(news_response, list):
+            news_items = news_response
+        # Caso B: L'oggetto ha l'attributo esplicito 'news' (Vecchie versioni Alpaca)
+        elif hasattr(news_response, 'news'):
+            news_items = news_response.news
+        # Caso C: L'oggetto ha l'attributo 'articles'
+        elif hasattr(news_response, 'articles'):
+            news_items = news_response.articles
+        # Caso D: È un modello Pydantic o Dizionario
+        else:
+            try:
+                # Forza la conversione in dizionario
+                resp_dict = dict(news_response)
+                # Estrae la lista da chiavi note
+                news_items = resp_dict.get('news', resp_dict.get('articles', []))
+            except Exception:
+                pass
+
+        # Validazione della lista estratta
+        if not news_items or not isinstance(news_items, list) or len(news_items) == 0:
+            return f"[NESSUNA NOTIZIA] Nessun evento rilevante recente per {clean_ticker}."
         
-        # Extract only the headlines
-        titles = [item.headline for item in news_items]
-        combined_news = " | ".join(titles)
-        
-        return {"news": combined_news}
+        # Estrazione sicura dei titoli (gestisce sia oggetti che dizionari)
+        titles = []
+        for item in news_items:
+            if hasattr(item, 'headline'):
+                titles.append(f"- {item.headline}")
+            elif isinstance(item, dict) and 'headline' in item:
+                titles.append(f"- {item['headline']}")
+                
+        if not titles:
+            return f"[NESSUNA NOTIZIA] Impossibile decodificare il formato delle notizie per {clean_ticker}."
+            
+        combined_news = "\n".join(titles)
+        return f"[ULTIME NOTIZIE {clean_ticker}]:\n{combined_news}"
         
     except Exception as e:
-        return {"error": f"Failed to fetch Alpaca news for {ticker}: {str(e)}"}
-        return {"error": f"Failed to fetch news for {ticker}: {str(e)}"}
+        logger.error(f"[TOOL ERROR] Alpaca News API failed per {ticker}: {str(e)}")
+        # Fallback anti-degenerazione
+        return f"[NESSUNA NOTIZIA] Errore tecnico nel fetch. Considera l'ambiente informativo NEUTRO. Procedi analizzando i dati di Prezzo e Portfolio."
