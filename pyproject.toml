@@ -8,9 +8,11 @@ version = "0.1.0"
 description = "Autonomous trading agent following a Perceive -> Reason -> Act loop"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    # All base dependencies are listed in requirements.txt
-]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
 
 [tool.setuptools.packages.find]
 where = ["."]
