@@ -15,6 +15,7 @@ class TradeDecision(BaseModel):
     news_summary: str = Field(description="Brief summary of the news considered for this decision")
     current_price: float = Field(description="The current market price of the asset")
     rationale: str = Field(description="Explicit and detailed reasoning for the decision (Why buy/sell/hold?)")
+    cleared_wanted_action: bool = Field(default=False, description="Set to true ONLY if you successfully executed or fully addressed the 'wanted_action' in this cycle, so it can be cleared.")
 
 # Graph State definition
 class AgentState(TypedDict):

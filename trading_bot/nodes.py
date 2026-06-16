@@ -140,12 +140,14 @@ def decisor(state: AgentState) -> dict:
         3. OPPORTUNISTIC BUY: If you already have positions in the market, propose "BUY" only if the recent news is distinctly positive and encouraging.
         4. HOLD: If you already have positions and the news is neutral/mixed, or if the news is strictly negative, propose "HOLD".
         5. WANTED ACTION: If the 'wanted_action' field in the user configuration contains a specific command (e.g., "sell all google stocks"), you MUST prioritize executing it.
-        
         CRITICAL CONSTRAINT: You cannot "SELL" 0 shares or "BUY" 0 shares. If your calculated quantity for a BUY or SELL is 0, you MUST propose "HOLD" instead.
         
+        WANTED ACTION CLEARANCE:
+        If you successfully executed or addressed the 'wanted_action' during this cycle (even if the action was rejected or deemed impossible for now), set 'cleared_wanted_action' to true. Otherwise, keep it false.
+        
         USER CONFIGURATION AND FEEDBACK CONSTRAINTS:
-        Consider these constraints set by the user: {json.dumps(user_config)}
-        Ensure your actions comply with the minimum liquidity and user feedback guidelines provided in the configuration.
+        Consider these constraints set by the user: {{user_config}}
+        Ensure your actions comply with the user feedback guidelines provided in the configuration.
 
         Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying to deploy initial capital if rule 2 triggers)."""),
         ("human", """
@@ -161,13 +163,13 @@ def decisor(state: AgentState) -> dict:
     
     try:
         # Rate limiting logic
-        prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data)
+        prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data, user_config=json.dumps(user_config))
         estimated_tokens = len(prompt_str) // 4
         rate_limiter.acquire("google_genai_rpm", 1)
         rate_limiter.acquire("google_genai_tpm", estimated_tokens)
         
         decision = reasoning_chain.invoke({
-            "portfolio": portfolio, "ticker": current_ticker, "price_data": price_data, "news_data": news_data
+            "portfolio": portfolio, "ticker": current_ticker, "price_data": price_data, "news_data": news_data, "user_config": json.dumps(user_config)
         })
     except Exception as e:
         logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
@@ -177,6 +179,72 @@ def decisor(state: AgentState) -> dict:
         )
 
     return {"proposed_decision": decision}
+
+def wanted_action_decisor(state: AgentState) -> dict:
+    """Node: WANTED_ACTION_DECISOR"""
+    logger.info("[NODE] WANTED_ACTION_DECISOR: Prioritizing execution of user wanted_action ")
+    
+    portfolio = state.get("portfolio", {})
+    error_message = state.get("error_message")
+    
+    if error_message:
+        logger.warning(f" [WARNING] WANTED_ACTION_DECISOR detected an error: {error_message}. ")
+        return {"proposed_decision": TradeDecision(
+            ticker="N/A", action="HOLD", quantity=0, news_summary="N/A",
+            current_price=0.0, rationale=f"System error upstream: {error_message}.", cleared_wanted_action=False
+        )}
+
+    # Read configuration
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+    user_config = {}
+    wanted_action = ""
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            user_config = json.load(f)
+            wanted_action = user_config.get("wanted_action", "")
+
+    with open(stream_file_path, "a", encoding="utf-8") as f:
+        f.write(f"\n[WANTED_ACTION_DECISOR]\nUser requested explicit action: '{wanted_action}'...\n")
+
+    # Step 1: Parse the wanted action into a TradeDecision shell (to get ticker, action, quantity)
+    parse_prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are an expert trading assistant. Translate the user's plain-text command into a structured TradeDecision. Infer the US stock ticker (e.g. 'AAPL' for Apple, 'NKE' for Nike). Determine action (BUY, SELL, HOLD) and quantity. Set news_summary to 'N/A', current_price to 0.0, and cleared_wanted_action to true. Your rationale MUST indicate this is to satisfy the wanted_action."),
+        ("human", "User Command: {wanted_action}")
+    ])
+    
+    parse_chain = parse_prompt | decisor_llm
+    
+    try:
+        estimated_tokens = len(str(wanted_action)) // 4
+        rate_limiter.acquire("google_genai_rpm", 1)
+        rate_limiter.acquire("google_genai_tpm", estimated_tokens)
+        
+        parsed_decision = parse_chain.invoke({"wanted_action": wanted_action})
+    except Exception as e:
+        logger.error(f" [ERROR] WANTED_ACTION_DECISOR LLM parse failed: {str(e)} ")
+        return {"proposed_decision": TradeDecision(
+            ticker="N/A", action="HOLD", quantity=0, news_summary="N/A",
+            current_price=0.0, rationale=f"LLM parsing error: {str(e)}.", cleared_wanted_action=True
+        )}
+
+    # If parsing returned HOLD or failed to find a valid action, just return it
+    if parsed_decision.action.upper() not in ["BUY", "SELL"] or parsed_decision.quantity <= 0:
+        parsed_decision.cleared_wanted_action = True
+        return {"proposed_decision": parsed_decision}
+
+    # Step 2: Fetch current price for the parsed ticker to validate feasibility
+    logger.info(f"[WANTED_ACTION_DECISOR] Extracted Ticker: {parsed_decision.ticker}. Fetching current price... ")
+    price_data = get_stock_price.invoke(parsed_decision.ticker)
+    
+    if "error" in price_data:
+        logger.warning(f"[WARNING] Could not fetch price for {parsed_decision.ticker}: {price_data['error']}. Setting to 1.0 just to let it pass if paper trading allows, or holding.")
+        parsed_decision.current_price = 1.0 # arbitrary fallback if API fails
+    else:
+        parsed_decision.current_price = price_data.get("price", 1.0)
+        
+    parsed_decision.cleared_wanted_action = True
+    
+    return {"proposed_decision": parsed_decision}
 
 def checker(state: AgentState) -> dict:
     """Node: CHECKER"""
@@ -295,6 +363,21 @@ def summarizer(state: AgentState) -> dict:
         rationale=journal_entry["rationale"], outcome=journal_entry["outcome"],
         data_sources="Alpaca, yfinance"
     )
+    
+    # Check if we need to clear the wanted_action
+    if decision and getattr(decision, "cleared_wanted_action", False):
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+        try:
+            if os.path.exists(config_path):
+                with open(config_path, "r") as cfg_file:
+                    cfg_data = json.load(cfg_file)
+                if cfg_data.get("wanted_action"):
+                    logger.info("[SUMMARIZER] DECISOR indicated wanted_action was addressed. Clearing it.")
+                    cfg_data["wanted_action"] = ""
+                    with open(config_path, "w") as cfg_file:
+                        json.dump(cfg_data, cfg_file, indent=4)
+        except Exception as e:
+            logger.error(f"[ERROR] Failed to clear wanted_action from config: {e}")
     
     if success: logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
     

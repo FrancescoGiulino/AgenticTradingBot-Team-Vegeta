@@ -3,7 +3,24 @@ from langgraph.graph import StateGraph, START, END
 from .state import AgentState
 
 logger = logging.getLogger(__name__)
-from .nodes import init_portfolio, decisor, checker, executer, summarizer
+import os
+import json
+from .nodes import init_portfolio, decisor, wanted_action_decisor, checker, executer, summarizer
+
+def route_after_init(state: AgentState) -> str:
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                user_config = json.load(f)
+                if user_config.get("wanted_action", "").strip():
+                    logger.info("[ROUTER] Wanted action found. Routing to WANTED_ACTION_DECISOR.")
+                    return "wanted_action_decisor"
+        except Exception as e:
+            logger.error(f"[ROUTER] Error reading configuration: {e}")
+    
+    logger.info("[ROUTER] No wanted action. Routing to DECISOR.")
+    return "decisor"
 
 def route_after_checker(state: AgentState) -> str:
     if state.get("is_decision_valid", False):
@@ -17,13 +34,24 @@ workflow = StateGraph(AgentState)
 
 workflow.add_node("init_portfolio", init_portfolio)
 workflow.add_node("decisor", decisor)
+workflow.add_node("wanted_action_decisor", wanted_action_decisor)
 workflow.add_node("checker", checker)
 workflow.add_node("executer", executer)
 workflow.add_node("summarizer", summarizer)
 
 workflow.add_edge(START, "init_portfolio")
-workflow.add_edge("init_portfolio", "decisor")
+
+workflow.add_conditional_edges(
+    "init_portfolio",
+    route_after_init,
+    {
+        "wanted_action_decisor": "wanted_action_decisor",
+        "decisor": "decisor"
+    }
+)
+
 workflow.add_edge("decisor", "checker")
+workflow.add_edge("wanted_action_decisor", "checker")
 
 workflow.add_conditional_edges(
     "checker",

@@ -12,15 +12,13 @@ CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configur
 
 class ConfigurationSchema(BaseModel):
     thoughts: str = Field(description="Your step-by-step reasoning on what needs to be changed in the configuration based on the user prompt.")
-    min_liquidity: float = Field(description="Minimum cash liquidity the bot must maintain.")
-    max_investment_per_trade_percentage: float = Field(description="Maximum percentage of portfolio to invest in a single trade (0-100).")
     user_feedback_guidelines: List[str] = Field(description="List of text guidelines/feedback provided by the user.")
     preferred_sectors: List[str] = Field(description="List of preferred market sectors to focus on.")
-    wanted_action: str = Field(default="", description="Explicit action requested by the user for the next trading cycle, e.g., 'sell all google stocks'. Leave empty if no specific immediate action is requested.")
+    wanted_action: str = Field(default="", description="Explicit action requested by the user for the next trading cycle, e.g., 'sell all google stocks' or 'buy google'. Leave empty if no specific immediate action is requested.")
 
 # Initialize the LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemma-4-26b-a4b-it",
+    model="gemma-4-31b-it",
     api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0.1
 )
@@ -50,9 +48,10 @@ def process_user_prompt(user_prompt: str) -> Tuple[bool, str]:
             {current_config}
             
             Rules:
-            1. If the user mentions a minimum liquidity or cash reserve, update `min_liquidity`.
-            3. If the user gives general feedback (e.g., "I don't like when you buy volatile tech stocks"), update `user_feedback_guidelines`. You MUST review existing guidelines and resolve any conflicts (e.g. if the user previously said 'hold google' and now says 'do not hold google', replace or remove the old guideline instead of keeping both).
-            4. If the user requests an immediate, explicit action for the next cycle (e.g., "sell all google stocks now"), set the `wanted_action` field.
+            1. If the user gives general feedback or rules (e.g., "I don't like when you buy volatile tech stocks", "always hold apple"), update `user_feedback_guidelines`. You MUST review existing guidelines and resolve any conflicts.
+            2. If the user expresses a lack of interest in a sector they currently prefer (e.g., "I don't think I want to invest in food"), simply remove it from `preferred_sectors` if it exists. DO NOT add a guideline against it unless they state clearly they are against it.
+            3. If the user suggests focusing on new areas, add them to `preferred_sectors`.
+            4. If the user requests an immediate, explicit action for the next cycle (e.g., "sell all google stocks now", "buy google"), set the `wanted_action` field.
             5. Keep the existing configuration values if the user does not mention them.
             6. Provide your detailed reasoning in the `thoughts` field.
             

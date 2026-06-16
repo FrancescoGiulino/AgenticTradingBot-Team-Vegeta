@@ -3,7 +3,7 @@
     "requests_per_minute": 200
   },
   "yfinance": {
-    "requests_per_minute": 6
+    "requests_per_minute": 12
   },
   "google_genai": {
     "requests_per_minute": 15,

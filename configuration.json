@@ -1,17 +1,7 @@
 {
-    "target_tickers": [
-        ""
-    ],
-    "min_liquidity": 20000.0,
-    "max_investment_per_trade_percentage": 10.0,
-    "user_feedback_guidelines": [
-        "non voglio azioni apple",
-        "non voglio pi\u00f9 investire nel mercato immobiliare"
-    ],
+    "user_feedback_guidelines": [],
     "preferred_sectors": [
-        "alimentare",
-        "automotive",
-        "food"
+        "immobiliare"
     ],
     "wanted_action": ""
 }
