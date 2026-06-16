@@ -1,5 +1,4 @@
 import time
-from .graph import app
 from datetime import datetime
 from dotenv import load_dotenv
 from .rate_limiter import rate_limiter
