@@ -12,7 +12,6 @@ from typing import Literal, List
 from trading_bot.knowledge_manager import knowledge_base
 from .state import AgentState, TradeDecision
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news, web_search
-from .rate_limiter import rate_limiter
 from .db import log_trade_journal
 from .config import shared_config
 
@@ -47,6 +46,13 @@ def init_portfolio(state: AgentState) -> dict:
     current_focus, has_changed = shared_config.get_focus_and_reset_flag()
     target_tickers = list(state.get("target_tickers", []))
     analyzed_tickers = list(state.get("analyzed_tickers", []))
+    analyzed_portfolio_tickers = list(state.get("analyzed_portfolio_tickers", []))
+    cycles_since_portfolio_analysis = state.get("cycles_since_portfolio_analysis", 0) + 1
+    
+    open_position_tickers = list(positions.keys())
+    if open_position_tickers and all(ticker in analyzed_portfolio_tickers for ticker in open_position_tickers):
+        logger.info("[INIT_PORTFOLIO] All open positions have been analyzed recently. Resetting portfolio memory.")
+        analyzed_portfolio_tickers = []
     
     if has_changed:
         logger.info(f"[SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist and analyzed memory!")
@@ -88,13 +94,15 @@ def init_portfolio(state: AgentState) -> dict:
         "market_focus": current_focus,
         "target_tickers": target_tickers,
         "analyzed_tickers": analyzed_tickers,
+        "analyzed_portfolio_tickers": analyzed_portfolio_tickers,
+        "cycles_since_portfolio_analysis": cycles_since_portfolio_analysis,
         "focus_iteration_count": focus_iteration_count,
         "error_message": None 
     }
 
 class SupervisorDecision(BaseModel):
-    next_node: Literal["researcher", "decisor", "checker", "executer", "summarizer", "FINISH"] = Field(
-        description="The next node to route to. 'researcher' to gather context on user commands. 'decisor' to make a trading decision. 'checker' to validate a proposed decision. 'executer' to execute a valid decision. 'summarizer' to wrap up after checker rejects or executer finishes. 'FINISH' to end the graph cycle."
+    next_node: Literal["researcher", "portfolio_analyzer", "decisor", "checker", "executer", "summarizer", "FINISH"] = Field(
+        description="The next node to route to. 'portfolio_analyzer' to review existing holdings. 'researcher' to gather context on user commands. 'decisor' to make a trading decision. 'checker' to validate a proposed decision. 'executer' to execute a valid decision. 'summarizer' to wrap up after checker rejects or executer finishes. 'FINISH' to end the graph cycle."
     )
     rationale: str = Field(description="Why this node was chosen.")
 
@@ -108,6 +116,7 @@ def supervisor_node(state: AgentState) -> dict:
     system_prompt = """You are the Supervisor of an AI Trading Bot.
 You control the execution flow between specialized worker nodes.
 Available Nodes:
+- 'portfolio_analyzer': Call this if 'cycles_since_portfolio_analysis' is >= 5 and there are open positions in the portfolio. This prioritizes reviewing current holdings.
 - 'researcher': Call this if there is a 'user_command' (prioritize this!) but 'research_context' is empty. Alternatively, if there is NO 'user_command', act autonomously: check the 'market_focus' and if 'target_tickers' is empty, call 'researcher' to generate a watchlist.
 - 'decisor': Call this to propose a trade (BUY/SELL/HOLD). Needs 'portfolio_summary' and either 'target_tickers' or 'user_command'.
 - 'checker': Call this after the decisor has proposed a decision, to validate it against the portfolio limits.
@@ -126,6 +135,7 @@ Target Tickers: {state.get("target_tickers", [])}
 Proposed Decision: {state.get("proposed_decision", "None")}
 Is Decision Valid: {state.get("is_decision_valid", "False")}
 Portfolio Summary: {state.get("portfolio_summary", "None")}
+Cycles Since Portfolio Analysis: {state.get("cycles_since_portfolio_analysis", 0)}
 """
 
     prompt = ChatPromptTemplate.from_messages([
@@ -146,6 +156,37 @@ Portfolio Summary: {state.get("portfolio_summary", "None")}
 class ResearchOutput(BaseModel):
     target_tickers: List[str] = Field(description="List of stock tickers identified from the research to focus on.")
     research_context: str = Field(description="Summary of the research findings to help the decisor.")
+
+def portfolio_analyzer(state: AgentState) -> dict:
+    logger.info("[NODE] PORTFOLIO ANALYZER: Reviewing open positions")
+    
+    portfolio = state.get("portfolio", {})
+    positions = portfolio.get("positions", {})
+    analyzed_portfolio_tickers = list(state.get("analyzed_portfolio_tickers", []))
+    
+    open_tickers = [t for t in positions.keys() if t not in analyzed_portfolio_tickers]
+    
+    if not open_tickers:
+        logger.info("[PORTFOLIO ANALYZER] All open positions have been analyzed. Resetting cycles.")
+        return {"cycles_since_portfolio_analysis": 0}
+        
+    tickers_to_evaluate = open_tickers[:5]
+    logger.info(f"[PORTFOLIO ANALYZER] Selected for evaluation: {tickers_to_evaluate}")
+    
+    target_tickers = list(state.get("target_tickers", []))
+    for t in reversed(tickers_to_evaluate):
+        if t in target_tickers:
+            target_tickers.remove(t)
+        target_tickers.insert(0, t)
+        
+    analyzed_portfolio_tickers.extend(tickers_to_evaluate)
+    
+    return {
+        "target_tickers": target_tickers,
+        "analyzed_portfolio_tickers": analyzed_portfolio_tickers,
+        "cycles_since_portfolio_analysis": 0,
+        "research_context": "Periodic portfolio review triggered. Focus on evaluating whether to hold or sell these positions based on current market conditions and performance."
+    }
 
 def researcher_node(state: AgentState) -> dict:
     logger.info("[NODE] RESEARCHER: Gathering information")

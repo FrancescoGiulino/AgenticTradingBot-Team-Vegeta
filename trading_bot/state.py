@@ -20,6 +20,8 @@ class AgentState(TypedDict):
     market_focus: Optional[str]
     target_tickers: List[str]
     analyzed_tickers: List[str]
+    cycles_since_portfolio_analysis: int
+    analyzed_portfolio_tickers: List[str]
     cycle_count: int
     focus_iteration_count: int
     next_node: Optional[str]

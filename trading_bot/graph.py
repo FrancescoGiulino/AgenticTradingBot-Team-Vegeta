@@ -11,7 +11,8 @@ from .nodes import (
     decisor,
     checker,
     executer,
-    summarizer
+    summarizer,
+    portfolio_analyzer
 )
 
 def supervisor_router(state: AgentState) -> str:
@@ -25,6 +26,7 @@ workflow = StateGraph(AgentState)
 workflow.add_node("init_portfolio", init_portfolio)
 workflow.add_node("supervisor", supervisor_node)
 workflow.add_node("researcher", researcher_node)
+workflow.add_node("portfolio_analyzer", portfolio_analyzer)
 workflow.add_node("decisor", decisor)
 workflow.add_node("checker", checker)
 workflow.add_node("executer", executer)
@@ -38,6 +40,7 @@ workflow.add_conditional_edges(
     supervisor_router,
     {
         "researcher": "researcher",
+        "portfolio_analyzer": "portfolio_analyzer",
         "decisor": "decisor",
         "checker": "checker",
         "executer": "executer",
@@ -47,6 +50,7 @@ workflow.add_conditional_edges(
 )
 
 workflow.add_edge("researcher", "supervisor")
+workflow.add_edge("portfolio_analyzer", "supervisor")
 workflow.add_edge("decisor", "supervisor")
 workflow.add_edge("checker", "supervisor")
 workflow.add_edge("executer", "supervisor")
