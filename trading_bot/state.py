@@ -21,6 +21,7 @@ class AgentState(TypedDict):
     target_tickers: List[str]
     analyzed_tickers: List[str]
     cycle_count: int
+    focus_iteration_count: int
     next_node: Optional[str]
     portfolio_summary: Optional[str]
     user_command: Optional[str]

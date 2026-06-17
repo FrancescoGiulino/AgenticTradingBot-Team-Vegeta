@@ -75,6 +75,7 @@ def main():
         "target_tickers": [], 
         "analyzed_tickers": [],
         "cycle_count": 1,
+        "focus_iteration_count": 0,
         "proposed_decision": None,
         "is_decision_valid": False,
         "last_n_actions": [],

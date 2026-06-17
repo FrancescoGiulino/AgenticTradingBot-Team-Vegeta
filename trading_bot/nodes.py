@@ -10,7 +10,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from typing import Literal, List
 
 from trading_bot.knowledge_manager import knowledge_base
-from .state import AgentState, TradeDecision, DynamicWatchlist
+from .state import AgentState, TradeDecision
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news, web_search
 from .rate_limiter import rate_limiter
 from .db import log_trade_journal
@@ -52,6 +52,9 @@ def init_portfolio(state: AgentState) -> dict:
         logger.info(f"[SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist and analyzed memory!")
         target_tickers = []
         analyzed_tickers = []
+        state["focus_iteration_count"] = 0
+
+    focus_iteration_count = state.get("focus_iteration_count", 0)
 
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
     user_command = ""
@@ -60,6 +63,24 @@ def init_portfolio(state: AgentState) -> dict:
             user_config = json.load(f)
             user_command = user_config.get("wanted_action", "").strip()
 
+    if not has_changed and not user_command:
+        if focus_iteration_count >= 5:
+            import random
+            alt_markets = ["Food and Agriculture", "Transportation and Logistics", "Healthcare and Pharmaceuticals", "Energy and Utilities", "Financial Services", "Retail and E-commerce"]
+            alt_markets = [m for m in alt_markets if m.lower() not in current_focus.lower()]
+            if not alt_markets:
+                alt_markets = ["Technology", "Retail"]
+            new_focus = random.choice(alt_markets)
+            logger.info(f"[SYSTEM ALERT] Rotating market focus to '{new_focus}' to variate searches (completed 5 iterations on '{current_focus}').")
+            
+            shared_config.update_focus(new_focus)
+            current_focus = new_focus
+            target_tickers = []
+            analyzed_tickers = []
+            focus_iteration_count = 0
+        else:
+            focus_iteration_count += 1
+
     return {
         "portfolio": portfolio_data,
         "portfolio_summary": portfolio_summary,
@@ -67,6 +88,7 @@ def init_portfolio(state: AgentState) -> dict:
         "market_focus": current_focus,
         "target_tickers": target_tickers,
         "analyzed_tickers": analyzed_tickers,
+        "focus_iteration_count": focus_iteration_count,
         "error_message": None 
     }
 
@@ -183,7 +205,6 @@ def researcher_node(state: AgentState) -> dict:
     except Exception as e:
         logger.error(f"[ERROR] Researcher LLM failed: {e}")
         return {"research_context": "Failed to analyze research data.", "target_tickers": state.get("target_tickers", [])}
-
 
 def decisor(state: AgentState) -> dict:
     logger.info("[NODE] DECISOR: Analyzing market and reasoning ")
