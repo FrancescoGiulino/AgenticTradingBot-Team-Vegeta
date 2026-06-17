@@ -19,5 +19,4 @@ class AgentConfig:
             self.action_changed = False
             return self.user_action, changed
 
-# Creiamo un'istanza globale che tutti i file potranno importare
 shared_config = AgentConfig()

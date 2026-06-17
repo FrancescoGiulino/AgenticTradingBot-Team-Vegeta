@@ -184,3 +184,4 @@ yfinance==1.4.1
 
 zstandard==0.25.0
 
+textual==8.2.7

@@ -74,7 +74,7 @@ class GlobalRateLimiter:
                 time_to_wait = (deficit / bucket["max_tokens"]) * bucket["refill_interval"]
             
             logger.warning(f"[RATE LIMITER] Limit reached for '{name}'. Sleeping for {time_to_wait:.2f} seconds to acquire {amount} tokens.")
-            time.sleep(max(0.1, time_to_wait)) # Sleep at least 0.1s to avoid tight loop
+            time.sleep(max(0.1, time_to_wait))
 
     def load_config(self, config_path: str):
         """

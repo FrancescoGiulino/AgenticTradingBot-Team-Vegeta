@@ -16,6 +16,10 @@ class MarketDiscovery(BaseModel):
         description="A list of 5-10 specific stock tickers mentioned in the news that represent the best trading opportunities: Key represents the ticker itself, represented in UPPERCASE. The value contains the reason of why it's an opportunity"
     )
 
+class ValidationResult(BaseModel):
+    is_valid: bool = Field(description="True if the user input represents a valid and relevant market sector or trading topic, False otherwise.")
+    refined_action: str = Field(description="The cleaned and refined market topic based on web search (or the original if already perfect). If is_valid is False, provide a brief reason.")
+
 # Output Schema for the DECISOR node
 class TradeDecision(BaseModel):
     ticker: str = Field(description="The ticker symbol of the stock")

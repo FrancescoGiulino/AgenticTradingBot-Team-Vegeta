@@ -8,8 +8,8 @@ from trading_bot.knowledge.knowledge_manager import knowledge_base
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .state import AgentState, MarketDiscovery, TradeDecision, DynamicWatchlist
-from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
+from .state import AgentState, MarketDiscovery, TradeDecision, DynamicWatchlist, ValidationResult
+from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news, web_search
 from .rate_limiter import rate_limiter
 from datetime import datetime, timedelta
 import time
@@ -98,6 +98,54 @@ def init_portfolio_node(state: AgentState) -> dict:
             "cycle_logs": [{"node": "init_portfolio", "event": "ERROR", "message": str(e)}]
         }
 
+def user_input_validator_node(state: AgentState) -> dict:
+    """
+    VALIDATOR NODE: Checks the user input, performs web research to see if it's a valid
+    and relevant market topic/sector, and refines it or rejects it.
+    """
+    user_action = state.get("user_action")
+    if not user_action:
+        return {}
+    
+    logger.info(f"[VALIDATOR] Validating user action: {user_action}")
+    try:
+        search_results = web_search.invoke({"query": f"{user_action} market sector news stocks"})
+        
+        prompt = f"""
+        You are a quantitative research analyst validator.
+        The user wants the trading agent to focus on the following topic/sector: "{user_action}".
+        
+        Based on the following recent web search results:
+        {search_results}
+        
+        Determine if this is a valid and relevant market topic. 
+        If it is, set is_valid to True and provide a refined_action (e.g., 'Focus on Renewable Energy sector companies like ENPH or FSLR').
+        If it's garbage, irrelevant, or unsafe, set is_valid to False and provide a brief reason in refined_action.
+        """
+        
+        structured_llm = llm.with_structured_output(ValidationResult)
+        validation = structured_llm.invoke(prompt)
+        
+        if validation.is_valid:
+            logger.info(f"[VALIDATOR] Input VALID: {validation.refined_action}")
+            return {
+                "user_action": validation.refined_action,
+                "cycle_logs": [{"node": "validator", "event": f"Validated user input: {validation.refined_action}"}]
+            }
+        else:
+            logger.warning(f"[VALIDATOR] Input REJECTED: {validation.refined_action}")
+            return {
+                "user_action": None, # Reset user action
+                "error_message": f"User action rejected: {validation.refined_action}",
+                "cycle_logs": [{"node": "validator", "event": f"Rejected user input: {validation.refined_action}"}]
+            }
+    except Exception as e:
+        logger.error(f"[VALIDATOR] Error: {str(e)}")
+        return {
+            "error_message": f"Validator node failed: {str(e)}",
+            "cycle_logs": [{"node": "validator", "event": "ERROR", "message": str(e)}]
+        }
+
 def load_history_node(state: AgentState) -> dict:
     """
     MEMORY NODE: Retrieves the last operations on the local database 
@@ -139,27 +187,23 @@ def discovery_node(state: AgentState) -> dict:
         alpaca = AlpacaService()
         news_client = alpaca.news_client
         
-        # Richiesta delle ultime 15 news
         request_params = NewsRequest(limit=30)
         response = news_client.get_news(request_params)
         
-        # --- ESTRAZIONE SICURA DELLE NEWS (Correzione Bug) ---
         if hasattr(response, "news"):
-            raw_news = response.news  # SDK ufficiale alpaca-py (Lista di oggetti News)
+            raw_news = response.news 
         elif hasattr(response, "data"):
-            raw_news = response.data  # Altre varianti SDK
+            raw_news = response.data
         elif isinstance(response, dict):
-            raw_news = response.get("news", [])  # Se la risposta è un dict JSON grezzo
+            raw_news = response.get("news", [])
         else:
             raw_news = response
 
-        # Se per qualche motivo raw_news fosse ancora un dizionario, prendiamo i suoi valori
         if isinstance(raw_news, dict):
             raw_news = raw_news.get("news", list(raw_news.values()))
         
         news_entries = []
         for item in raw_news:
-            # Estraiamo i campi controllando se item è un dizionario o un oggetto SDK
             if isinstance(item, dict):
                 headline = item.get("headline", "No Title")
                 summary = item.get("summary", "No Summary Available")
@@ -194,16 +238,14 @@ def discovery_node(state: AgentState) -> dict:
         structured_llm = llm.with_structured_output(MarketDiscovery)
         discovery_result = structured_llm.invoke(prompt)
 
-        # Sanitizzazione e pulizia dei Ticker (forziamo chiavi maiuscole nel nuovo formato Dict)
         clean_candidates = {
             ticker.upper().strip(): rationale 
             for ticker, rationale in discovery_result.candidate_tickers.items()
         }
 
-        # Salviamo nella cache
         cache_manager.set_discovery(discovery_result.market_themes, clean_candidates)
 
-        # logger.info(f"{discovery_result.market_themes} : {clean_candidates")
+        logger.info(f"{discovery_result.market_themes} : {clean_candidates}")
 
         return {
             "market_themes": discovery_result.market_themes,
@@ -230,7 +272,6 @@ def quant_enrichment_node(state: AgentState) -> dict:
         alpaca = AlpacaService()
         hist_client = alpaca.historical_client
         
-        # 1. Raccogliamo tutti i ticker da analizzare (Portafoglio + Candidati News)
         portfolio_tickers = list(state.get("portfolio", {}).get("positions", {}).keys())
         candidate_tickers = list(state.get("candidate_tickers", {}).keys())
         all_tickers = list(set(portfolio_tickers + candidate_tickers))
@@ -238,32 +279,37 @@ def quant_enrichment_node(state: AgentState) -> dict:
         if not all_tickers:
             return {"quant_data": {}}
 
-        # 2. Prepariamo la richiesta dati ad Alpaca (ultimi 100 giorni solari)
         end_date = datetime.now()
         start_date = end_date - timedelta(days=100)
         
-        request_params = StockBarsRequest(
-            symbol_or_symbols=all_tickers,
-            timeframe=TimeFrame.Day,
-            start=start_date,
-            end=end_date,
-            feed=DataFeed.IEX
-        )
-        
-        bars = hist_client.get_stock_bars(request_params).df
         quant_results = {}
 
-        # 3. Calcolo degli indicatori per ogni ticker
         for ticker in all_tickers:
             try:
-                # Alpaca restituisce un MultiIndex DataFrame (symbol, timestamp)
-                ticker_df = bars.loc[ticker].copy()
+                request_params = StockBarsRequest(
+                    symbol_or_symbols=[ticker],
+                    timeframe=TimeFrame.Day,
+                    start=start_date,
+                    end=end_date,
+                    feed=DataFeed.IEX
+                )
+                
+                bars_response = hist_client.get_stock_bars(request_params)
+                if not bars_response or bars_response.df.empty:
+                    logger.warning(f"[QUANT] No data returned for {ticker}. Skipping.")
+                    continue
+                    
+                bars = bars_response.df
+                
+                try:
+                    ticker_df = bars.loc[ticker].copy()
+                except KeyError:
+                    ticker_df = bars.copy()
                 
                 if ticker_df.empty or len(ticker_df) < 50:
                     logger.warning(f"[QUANT] Not enough data for {ticker}. Skipping math.")
                     continue
                 
-                # Prezzo attuale e Volume
                 current_price = float(ticker_df['close'].iloc[-1])
                 avg_volume = int(ticker_df['volume'].tail(20).mean())
                 
@@ -280,7 +326,6 @@ def quant_enrichment_node(state: AgentState) -> dict:
                 atr_14 = float(true_range.rolling(window=14).mean().iloc[-1])
                 
                 # --- RISK SIZING ---
-                # Quante azioni posso comprare rischiando massimo 100$ di oscillazione base?
                 risk_budget_usd = 100.0 
                 suggested_qty = int(risk_budget_usd / atr_14) if atr_14 > 0 else 0
 
@@ -309,8 +354,8 @@ def quant_enrichment_node(state: AgentState) -> dict:
                     "liquidity": liquidity_status
                 }
                 
-            except KeyError:
-                logger.warning(f"[QUANT] Ticker {ticker} not found in historical data.")
+            except Exception as inner_e:
+                logger.warning(f"[QUANT] Failed to process {ticker}: {str(inner_e)}")
                 continue
         logger.info(f"[QUANT] Successfully calculated metrics for {len(quant_results)} tickers.")
         
@@ -355,7 +400,6 @@ def decisor_node(state: AgentState) -> dict:
     prompt_info = knowledge_base.get_knowledge("the_intelligent_investor.txt")
     quantity_info = knowledge_base.get_knowledge("quantities.txt")
 
-    # Prepare the system prompt enforcing your exact business rules
     prompt = ChatPromptTemplate.from_messages([
         ("system", f"""You are an active and strategic AI Trading Agent.
         
@@ -368,9 +412,10 @@ def decisor_node(state: AgentState) -> dict:
         Recent History: {recent_history}
         User Action Requested: {user_action}
         Hot Market Themes: {market_themes} 
-        Candidate Tickers: {candidate_tickers}
+        Candidate Tickers: {candidate_tickers} note: keep the portfolio balanced over different markets basen on your portfolio and history
         Pending Orders: {pending_orders}
-        Quantities: {quant_data} 
+        Quantities: {quant_data}
+        
         
         You must ALWAYS check the 'pending_orders' list inside the Portfolio Status.
         If a ticker has a pending order, the market is either closed or the order is awaiting execution. 
