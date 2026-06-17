@@ -6,10 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Name of the database file
 DB_NAME = "trading_agent.db"
-
-# Singleton connection object
 _conn = None
 
 def get_connection():
@@ -20,7 +17,6 @@ def get_connection():
     global _conn
     if _conn is None:
         try:
-            # check_same_thread=False allows sharing the connection across threads if needed
             _conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         except Exception as e:
             logger.error(f"[DATABASE ERROR] Failed to connect to SQLite: {str(e)}")
@@ -53,7 +49,6 @@ def init_db():
         conn = get_connection()
         cursor = conn.cursor()
 
-        # 1. Market Observations Table (Researcher/Analyst Agent logs)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS market_observations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,7 +61,6 @@ def init_db():
             )
         """)
 
-        # 2. Trade Journal Table (Decision Maker Agent / Hackathon requirement)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS trade_journal (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,7 +78,6 @@ def init_db():
             )
         """)
 
-        # 3. System Logs Table (Error handling, node triggers, and tool failures)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS system_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,7 +88,6 @@ def init_db():
             )
         """)
 
-        # 4. Portfolio History Table (For Dashboard Charts)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS portfolio_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

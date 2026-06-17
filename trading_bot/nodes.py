@@ -46,10 +46,12 @@ def init_portfolio(state: AgentState) -> dict:
 
     current_focus, has_changed = shared_config.get_focus_and_reset_flag()
     target_tickers = list(state.get("target_tickers", []))
+    analyzed_tickers = list(state.get("analyzed_tickers", []))
     
     if has_changed:
-        logger.info(f"[SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist!")
+        logger.info(f"[SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist and analyzed memory!")
         target_tickers = []
+        analyzed_tickers = []
 
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
     user_command = ""
@@ -64,6 +66,7 @@ def init_portfolio(state: AgentState) -> dict:
         "user_command": user_command,
         "market_focus": current_focus,
         "target_tickers": target_tickers,
+        "analyzed_tickers": analyzed_tickers,
         "error_message": None 
     }
 
@@ -76,7 +79,6 @@ class SupervisorDecision(BaseModel):
 def supervisor_node(state: AgentState) -> dict:
     logger.info("[NODE] SUPERVISOR: Deciding next action based on state")
     
-    # Simple static logic to avoid loop if error
     if state.get("error_message"):
         logger.warning(f"[SUPERVISOR] Error detected: {state['error_message']}. Routing to summarizer.")
         return {"next_node": "summarizer"}
@@ -128,17 +130,19 @@ def researcher_node(state: AgentState) -> dict:
     
     command = state.get("user_command", "")
     market_focus = state.get("market_focus", "technology")
+    analyzed_tickers = state.get("analyzed_tickers", [])
     
+    #TODO: This is an atonomous exploration based on Market Focus, we want to allow teh AI to search non focused markets
     if not command:
-        logger.info(f"[RESEARCHER] Autonomous mode. Generating watchlist for focus: {market_focus}")
+        logger.info(f"[RESEARCHER] Autonomous mode. Generating watchlist for focus: {market_focus}. Avoiding: {analyzed_tickers}")
         explorer_prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Provide a brief rationale in 'research_context'."),
+            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Do NOT suggest any tickers from this list: {analyzed_tickers}. Provide a brief rationale in 'research_context'."),
             ("human", "Generate tickers for this focus: {focus}")
         ])
         
         explorer_chain = explorer_prompt | llm.with_structured_output(ResearchOutput)
         try:
-            result = explorer_chain.invoke({"focus": market_focus})
+            result = explorer_chain.invoke({"focus": market_focus, "analyzed_tickers": analyzed_tickers})
             logger.info(f"[RESEARCHER] New Watchlist Created: {result.target_tickers}")
             return {
                 "target_tickers": result.target_tickers,
@@ -344,7 +348,6 @@ def summarizer(state: AgentState) -> dict:
         data_sources="Alpaca, yfinance"
     )
     
-    # Check if we need to clear the wanted_action
     if decision and getattr(decision, "cleared_wanted_action", False):
         config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
         try:
@@ -365,13 +368,21 @@ def summarizer(state: AgentState) -> dict:
     updated_last_n.append({"ticker": journal_entry["ticker"], "action": journal_entry["action"], "outcome": journal_entry["outcome"]})
     if len(updated_last_n) > MAX_N: updated_last_n.pop(0)
 
+    analyzed_tickers = list(state.get("analyzed_tickers", []))
+    if decision and decision.ticker and decision.ticker != "N/A":
+        if decision.ticker not in analyzed_tickers:
+            analyzed_tickers.append(decision.ticker)
+            if len(analyzed_tickers) > 50:
+                analyzed_tickers.pop(0)
+
     return {
         "target_tickers": target_tickers,
+        "analyzed_tickers": analyzed_tickers,
         "last_n_actions": updated_last_n,
         "journal": [journal_entry], 
         "proposed_decision": None,  
         "is_decision_valid": False, 
         "error_message": None,
-        "research_context": None, # clear research context for next cycle
-        "user_command": None # clear command state
+        "research_context": None,
+        "user_command": None
     }

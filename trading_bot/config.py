@@ -2,7 +2,7 @@ import threading
 
 class AgentConfig:
     def __init__(self):
-        self.market_focus = "Innovative Tech and EV" # Focus iniziale
+        self.market_focus = "Innovative Tech and EV"
         self.focus_changed = False
         self.lock = threading.Lock()
 
@@ -19,5 +19,4 @@ class AgentConfig:
             self.focus_changed = False
             return self.market_focus, changed
 
-# Creiamo un'istanza globale che tutti i file potranno importare
 shared_config = AgentConfig()

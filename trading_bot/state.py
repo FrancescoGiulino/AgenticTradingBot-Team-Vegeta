@@ -19,6 +19,8 @@ class AgentState(TypedDict):
     portfolio: Dict[str, Any]
     market_focus: Optional[str]
     target_tickers: List[str]
+    analyzed_tickers: List[str]
+    cycle_count: int
     next_node: Optional[str]
     portfolio_summary: Optional[str]
     user_command: Optional[str]
