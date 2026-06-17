@@ -9,6 +9,10 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.data.historical.news import NewsClient
 from alpaca.data.requests import NewsRequest
 from .rate_limiter import rate_limiter
+import urllib.request
+from html.parser import HTMLParser
+import re
+from ddgs import DDGS
 
 logger = logging.getLogger(__name__)
 
@@ -147,22 +151,70 @@ def get_stock_news(ticker: str) -> str:
         logger.error(f"[TOOL ERROR] Alpaca News API failed per {ticker}: {str(e)}")
         return f"[NESSUNA NOTIZIA] Errore tecnico nel fetch. Considera l'ambiente informativo NEUTRO. Procedi analizzando i dati di Prezzo e Portfolio."
 
+class _SimpleTextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.text = []
+        self.ignore_tags = {'script', 'style', 'noscript', 'meta', 'head', 'title'}
+        self.current_tag = None
+
+    def handle_starttag(self, tag, attrs):
+        self.current_tag = tag
+
+    def handle_endtag(self, tag):
+        self.current_tag = None
+
+    def handle_data(self, data):
+        if self.current_tag not in self.ignore_tags:
+            cleaned = data.strip()
+            if cleaned:
+                self.text.append(cleaned)
+
 @tool
 def web_search(query: str) -> str:
     """
-    Performs a web search using DuckDuckGo to find recent information on the web.
+    Performs a web search using DuckDuckGo to find recent news.
+    It attempts to scrape the text of the first couple of sites to provide rich context.
     Useful for researching companies, finding stock tickers, or getting the latest market context.
     """
-    from ddgs import DDGS
     try:
         with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=3))
+            # Try news first
+            try:
+                results = list(ddgs.news(query, max_results=3))
+            except Exception as e:
+                logger.error(f"[web_search] News error: {e}")
+                results = []
+                
+            if not results:
+                logger.info("[web_search] Falling back to text search")
+                results = list(ddgs.text(query, max_results=3))
+                
             if not results:
                 return "No results found."
             
             formatted_results = []
             for r in results:
-                formatted_results.append(f"Title: {r.get('title', '')}\nSnippet: {r.get('body', '')}")
+                title = r.get('title', '')
+                snippet = r.get('body', r.get('snippet', ''))
+                url = r.get('url', r.get('href', ''))
+                
+                content = snippet
+                if url:
+                    try:
+                        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+                        with urllib.request.urlopen(req, timeout=5) as response:
+                            html = response.read().decode('utf-8', errors='ignore')
+                            extractor = _SimpleTextExtractor()
+                            extractor.feed(html)
+                            full_text = ' '.join(extractor.text)
+                            full_text = re.sub(r'\s+', ' ', full_text).strip()
+                            if full_text:
+                                content += f"\nScraped Text: {full_text[:2000]}..."
+                    except Exception as e:
+                        logger.warning(f"[web_search] Failed to scrape {url}: {e}")
+                
+                formatted_results.append(f"Title: {title}\nURL: {url}\nContent: {content}")
             return "\n\n".join(formatted_results)
     except Exception as e:
         return f"Search failed: {str(e)}"
