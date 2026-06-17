@@ -386,7 +386,7 @@ def decisor_node(state: AgentState) -> dict:
         # TODO change location?
         
         decision = TradeDecision(
-            ticker="NO-TICK", action="HOLD", quantity=0.0, confidence_score=1.0,
+            ticker="NO-TICK", action="HOLD", quantity=0, confidence_score=1.0,
             rationale=f"LLM processing error: {str(e)}."
         )
         
