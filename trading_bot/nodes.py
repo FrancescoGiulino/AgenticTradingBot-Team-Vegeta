@@ -187,15 +187,53 @@ def discovery_node(state: AgentState) -> dict:
     daily trends and tickers to analyze
     """
     try:
+        alpaca = AlpacaService()
+        news_client = alpaca.news_client
+
         intent = state.get("action_intent")
         if intent == "DIRECT_ACTION":
             target_tickers = state.get("action_tickers", [])
-            clean_candidates = {ticker.upper().strip(): "User explicitly requested a trade on this ticker." for ticker in target_tickers}
-            logger.info(f"[DISCOVERY] Bypassing general news for DIRECT_ACTION. Extracted tickers: {clean_candidates}")
+            clean_candidates = {}
+            
+            for ticker in target_tickers:
+                rationale = "User explicitly requested a trade."
+                try:
+                    request_params = NewsRequest(symbols=[ticker], limit=3)
+                    response = news_client.get_news(request_params)
+                    
+                    if hasattr(response, "news"):
+                        raw_news = response.news 
+                    elif hasattr(response, "data"):
+                        raw_news = response.data
+                    elif isinstance(response, dict):
+                        raw_news = response.get("news", [])
+                    else:
+                        raw_news = response
+                        
+                    if isinstance(raw_news, dict):
+                        raw_news = raw_news.get("news", list(raw_news.values()))
+                    
+                    headlines = []
+                    for item in raw_news:
+                        if isinstance(item, dict):
+                            hl = item.get("headline", "")
+                        else:
+                            hl = getattr(item, "headline", "")
+                        if hl:
+                            headlines.append(hl)
+                    
+                    if headlines:
+                        rationale += f" Recent news: {' | '.join(headlines)}"
+                except Exception as e:
+                    logger.warning(f"Could not fetch targeted news for {ticker}: {e}")
+                
+                clean_candidates[ticker.upper().strip()] = rationale
+                
+            logger.info(f"[DISCOVERY] Fetched targeted news for DIRECT_ACTION. Extracted tickers: {clean_candidates}")
             return {
                 "market_themes": ["User Directed Action"],
                 "candidate_tickers": clean_candidates,
-                "cycle_logs": [{"node": "discovery", "event": f"Bypassed news. Directly added user targets: {list(clean_candidates.keys())}"}]
+                "cycle_logs": [{"node": "discovery", "event": f"Fetched targeted news for: {list(clean_candidates.keys())}"}]
             }
 
         cache_manager = DiscoveryCache()
