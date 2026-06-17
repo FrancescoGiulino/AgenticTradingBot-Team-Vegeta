@@ -67,7 +67,7 @@ def main():
     
     rate_limiter.load_config("rate_limits.json")
 
-    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configuration.json")
     
     initial_state = {
         "portfolio": {},

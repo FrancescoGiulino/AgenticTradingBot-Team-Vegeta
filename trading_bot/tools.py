@@ -40,6 +40,23 @@ def get_portfolio_status() -> dict:
         account = trading_client.get_account()
         positions = trading_client.get_all_positions()
         
+        try:
+            from alpaca.trading.requests import GetOrdersRequest
+            from alpaca.trading.enums import QueryOrderStatus
+            req = GetOrdersRequest(status=QueryOrderStatus.OPEN)
+            open_orders = trading_client.get_orders(filter=req)
+        except Exception as e:
+            logger.warning(f"Failed to use GetOrdersRequest: {e}. Trying get_orders() without filter.")
+            open_orders = trading_client.get_orders()
+            
+        pending_orders = []
+        for order in open_orders:
+            pending_orders.append({
+                "ticker": order.symbol,
+                "action": "BUY" if order.side == OrderSide.BUY else "SELL",
+                "qty": float(order.qty) if order.qty else 0.0
+            })
+        
         portfolio_positions = {}
         for pos in positions:
             portfolio_positions[pos.symbol] = {
@@ -51,7 +68,8 @@ def get_portfolio_status() -> dict:
         return {
             "cash": float(account.cash),
             "portfolio_value": float(account.portfolio_value),
-            "positions": portfolio_positions
+            "positions": portfolio_positions,
+            "pending_orders": pending_orders
         }
     except Exception as e:
         return {"error": f"Failed to retrieve portfolio: {str(e)}"}

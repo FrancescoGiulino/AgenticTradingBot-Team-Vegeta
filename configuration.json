@@ -1,5 +1,9 @@
 {
-    "user_feedback_guidelines": [],
-    "preferred_sectors": [],
+    "user_feedback_guidelines": [
+        "I don't like when you buy volatile tech stocks"
+    ],
+    "preferred_sectors": [
+        "food"
+    ],
     "wanted_action": ""
 }

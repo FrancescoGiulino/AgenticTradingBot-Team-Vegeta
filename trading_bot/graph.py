@@ -52,8 +52,8 @@ workflow.add_conditional_edges(
 workflow.add_edge("researcher", "supervisor")
 workflow.add_edge("portfolio_analyzer", "supervisor")
 workflow.add_edge("decisor", "supervisor")
-workflow.add_edge("checker", "supervisor")
-workflow.add_edge("executer", "supervisor")
+workflow.add_edge("checker", "executer")
+workflow.add_edge("executer", "summarizer")
 workflow.add_edge("summarizer", "supervisor")
 
 app = workflow.compile()

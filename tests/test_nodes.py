@@ -1,4 +1,5 @@
-from .context import trading_bot
+import context
+from trading_bot import nodes
 from trading_bot.state import TradeDecision
 from trading_bot.nodes import checker
 

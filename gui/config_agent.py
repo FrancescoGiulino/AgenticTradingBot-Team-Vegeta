@@ -2,13 +2,15 @@ import json
 import os
 import logging
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from typing import List
 
 logger = logging.getLogger(__name__)
 
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configuration.json")
 
 class ConfigurationSchema(BaseModel):
     thoughts: str = Field(description="Your step-by-step reasoning on what needs to be changed in the configuration based on the user prompt.")
@@ -16,14 +18,29 @@ class ConfigurationSchema(BaseModel):
     preferred_sectors: List[str] = Field(description="List of preferred market sectors to focus on.")
     wanted_action: str = Field(default="", description="Explicit action requested by the user for the next trading cycle, e.g., 'sell all google stocks' or 'buy google'. Leave empty if no specific immediate action is requested.")
 
-# Initialize the LLM
-llm = ChatGoogleGenerativeAI(
+llm_google = ChatGoogleGenerativeAI(
     model="gemma-4-31b-it",
     api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0.1
 )
 
-config_llm = llm.with_structured_output(ConfigurationSchema)
+llm_groq = ChatGroq(
+    model="llama3.3-70b-versatile",
+    api_key=os.getenv("GROQ_API_KEY"),
+    temperature=0.1
+)
+
+locallm = ChatOpenAI(
+    base_url="http://localhost:1234/v1",
+    api_key="lm-studio",
+    model="local-model",
+    temperature=0.1
+)
+
+USE_LOCAL_LLM = os.getenv("USE_LOCAL_LLM", "false").lower() == "true"
+active_llm = locallm if USE_LOCAL_LLM else llm_groq
+
+config_llm = active_llm.with_structured_output(ConfigurationSchema)
 
 from typing import List, Tuple
 
