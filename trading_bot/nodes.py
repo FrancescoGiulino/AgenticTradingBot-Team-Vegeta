@@ -7,17 +7,14 @@ from trading_bot.knowledge.knowledge_manager import knowledge_base
 
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
 from .state import AgentState, MarketDiscovery, TradeDecision, DynamicWatchlist, ValidationResult
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news, web_search
 from .rate_limiter import rate_limiter
 from datetime import datetime, timedelta
 import time
-# from .db import log_trade_journal
+from pydantic import BaseModel, Field
 from .config import shared_config
 from trading_bot.utils.cache import DiscoveryCache
-from trading_bot.services.alpaca_service import AlpacaService
-from alpaca.data.historical.news import NewsClient
 from alpaca.data.requests import NewsRequest, StockBarsRequest
 import pandas as pd
 from alpaca.data.timeframe import TimeFrame
@@ -84,11 +81,12 @@ def init_portfolio_node(state: AgentState) -> dict:
         }
         
         action, changed = shared_config.get_action_and_reset_flag()
+        current_action = action if changed else state.get("user_action")
         
         logger.info(f"[INIT_PORTFOLIO]: obtained initial data: {portfolio_data}")
         return {
             "portfolio": portfolio_data,
-            "user_action": action,
+            "user_action": current_action,
             "cycle_logs": [{"node": "init_portfolio", "event": "Portfolio synced successfully."}]
         }
 
@@ -110,32 +108,48 @@ def user_input_validator_node(state: AgentState) -> dict:
     logger.info(f"[VALIDATOR] Validating user action: {user_action}")
     try:
         search_results = web_search.invoke({"query": f"{user_action} market sector news stocks"})
-        
+
         prompt = f"""
         You are a quantitative research analyst validator.
-        The user wants the trading agent to focus on the following topic/sector: "{user_action}".
+        The user wants the trading agent to focus on the following request: "{user_action}".
         
-        Based on the following recent web search results:
-        {search_results}
+        Determine the intent of the user request:
+        - DIRECT_ACTION: Explicit trades on specific tickers (e.g. "sell AAPL", "buy 10 shares of TSLA"). Set extracted_tickers and extracted_action.
+        - THEMATIC_ACTION: A broad portfolio command (e.g. "balance my portfolio", "sell my tech stocks"). Set extracted_action.
+        - MARKET_EXPLORATION: A general request to look into a sector (e.g. "focus on AI", "renewable energy").
         
-        Determine if this is a valid and relevant market topic. 
-        If it is, set is_valid to True and provide a refined_action (e.g., 'Focus on Renewable Energy sector companies like ENPH or FSLR').
-        If it's garbage, irrelevant, or unsafe, set is_valid to False and provide a brief reason in refined_action.
+        If it is a MARKET_EXPLORATION, you must determine if it is a valid and relevant market topic. 
+        If it is, set is_valid to True and provide a refined_action. If it's garbage, set is_valid to False.
+        DIRECT_ACTION and THEMATIC_ACTION are always valid.
+
+        Here the result of a web search of the user input: {search_results}
         """
         
         structured_llm = llm.with_structured_output(ValidationResult)
         validation = structured_llm.invoke(prompt)
         
+        if validation.intent == "MARKET_EXPLORATION" and validation.is_valid:
+            # Quick web search to refine the exploration topic
+            search_results = web_search.invoke({"query": f"{validation.refined_action} market sector news stocks"})
+            # We just use the search results implicitly or trust the LLM's validation
+            logger.info(f"[VALIDATOR] Did web search for MARKET_EXPLORATION: {validation.refined_action}")
+            
         if validation.is_valid:
-            logger.info(f"[VALIDATOR] Input VALID: {validation.refined_action}")
+            logger.info(f"[VALIDATOR] Input VALID ({validation.intent}): {validation.refined_action}")
             return {
                 "user_action": validation.refined_action,
-                "cycle_logs": [{"node": "validator", "event": f"Validated user input: {validation.refined_action}"}]
+                "action_intent": validation.intent,
+                "action_tickers": validation.extracted_tickers,
+                "action_type": validation.extracted_action,
+                "cycle_logs": [{"node": "validator", "event": f"Validated user input ({validation.intent}): {validation.refined_action}"}]
             }
         else:
             logger.warning(f"[VALIDATOR] Input REJECTED: {validation.refined_action}")
             return {
                 "user_action": None, # Reset user action
+                "action_intent": None,
+                "action_tickers": [],
+                "action_type": None,
                 "error_message": f"User action rejected: {validation.refined_action}",
                 "cycle_logs": [{"node": "validator", "event": f"Rejected user input: {validation.refined_action}"}]
             }
@@ -173,6 +187,17 @@ def discovery_node(state: AgentState) -> dict:
     daily trends and tickers to analyze
     """
     try:
+        intent = state.get("action_intent")
+        if intent == "DIRECT_ACTION":
+            target_tickers = state.get("action_tickers", [])
+            clean_candidates = {ticker.upper().strip(): "User explicitly requested a trade on this ticker." for ticker in target_tickers}
+            logger.info(f"[DISCOVERY] Bypassing general news for DIRECT_ACTION. Extracted tickers: {clean_candidates}")
+            return {
+                "market_themes": ["User Directed Action"],
+                "candidate_tickers": clean_candidates,
+                "cycle_logs": [{"node": "discovery", "event": f"Bypassed news. Directly added user targets: {list(clean_candidates.keys())}"}]
+            }
+
         cache_manager = DiscoveryCache()
         cached_data = cache_manager.get_cached_discovery()
 
@@ -395,6 +420,9 @@ def decisor_node(state: AgentState) -> dict:
         return {"proposed_decision": decision}    
     
     logger.info(f"[DECISOR] Fetching news for {candidate_tickers}... ")
+    action_intent = state.get("action_intent")
+    action_type = state.get("action_type")
+    action_tickers = state.get("action_tickers")
 
     # TODO add info properly!
     prompt_info = knowledge_base.get_knowledge("the_intelligent_investor.txt")
@@ -411,11 +439,13 @@ def decisor_node(state: AgentState) -> dict:
         Portfolio Status: {portfolio}
         Recent History: {recent_history}
         User Action Requested: {user_action}
+        Action Intent: {action_intent}
+        Action Type: {action_type}
+        Action Tickers: {action_tickers}
         Hot Market Themes: {market_themes} 
         Candidate Tickers: {candidate_tickers} note: keep the portfolio balanced over different markets basen on your portfolio and history
         Pending Orders: {pending_orders}
-        Quantities: {quant_data}
-        
+        Quantities: {quant_data} 
         
         You must ALWAYS check the 'pending_orders' list inside the Portfolio Status.
         If a ticker has a pending order, the market is either closed or the order is awaiting execution. 
@@ -423,6 +453,11 @@ def decisor_node(state: AgentState) -> dict:
             - If your top candidate is in the pending list, you must skip it and evaluate the next best candidate, or propose HOLD.
             - DO NOT stack multiple orders on the same asset.
          
+        [DIRECTIVE FOR DIRECT OR THEMATIC ACTIONS]
+        If Action Intent is DIRECT_ACTION or THEMATIC_ACTION, your primary goal is to propose ONE trade that moves closer to fulfilling the User Action Requested.
+        - For DIRECT_ACTION, you MUST propose the requested action on the requested tickers, unless the quant metrics show extreme danger.
+        - Propose exactly one logical next step.
+
         **Now hunt. Capital is meant to grow, not to be preserved.**
         [RATIONALE DIRECTIVE]
         When filling out the rationale field, you must explicitly state which module made the decision and why it was prioritized over others.
@@ -433,15 +468,18 @@ def decisor_node(state: AgentState) -> dict:
     reasoning_chain = prompt | decisor_llm
     
     try:
-        # Rate limiting logic
-        #prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data)
         #estimated_tokens = len(prompt_str) // 4
         #rate_limiter.acquire("google_genai_rpm", 1)
         #rate_limiter.acquire("google_genai_tpm", estimated_tokens)
         
         decision = reasoning_chain.invoke({
+            "prompt_info": prompt_info,
+            "quantity_info": quantity_info,
             "portfolio": portfolio, "recent_history": recent_history, "user_action": user_action, "market_themes": market_themes, "candidate_tickers": candidate_tickers, "quant_data": quant_data,
-            "pending_orders": pending_orders
+            "pending_orders": pending_orders,
+            "action_intent": action_intent,
+            "action_type": action_type,
+            "action_tickers": action_tickers
         })
     except Exception as e:
         logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
@@ -522,9 +560,55 @@ def summarizer(state: AgentState) -> dict:
         data_sources="Alpaca, yfinance"
     )
 
-    if success: logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
+class SatisfactionResult(BaseModel):
+    is_satisfied: bool = Field(description="True if the user's action has been completely satisfied.")
+    rationale: str = Field(description="Why it is satisfied or not.")
 
-    return {  
-        "proposed_decision": None,
-        "error_message": None
-    }
+def satisfaction_checker_node(state: AgentState) -> dict:
+    """
+    SATISFACTION CHECKER NODE: Checks if the ongoing user action has been fully satisfied.
+    If satisfied, clears the action from the state.
+    """
+    user_action = state.get("user_action")
+    if not user_action:
+        return {}
+        
+    logger.info(f"[SATISFACTION_CHECKER] Checking if user action is satisfied: {user_action}")
+    try:
+        portfolio = state.get("portfolio", {})
+        recent_history = state.get("recent_history", [])
+        
+        prompt = f"""
+        You are an AI Trading Assistant. The user originally requested: "{user_action}".
+        
+        Look at the current portfolio state:
+        {portfolio}
+        
+        Look at the recent trading history (which includes trades just executed):
+        {recent_history}
+        
+        Determine if the user's request has been completely satisfied.
+        If it requires multiple trades (e.g. "Sell AAPL and MSFT") and only one was done, it is NOT satisfied yet.
+        If it was a general MARKET_EXPLORATION and the bot made a decision based on it, consider it satisfied so we can move on.
+        """
+        
+        structured_llm = llm.with_structured_output(SatisfactionResult)
+        result = structured_llm.invoke(prompt)
+        
+        if result.is_satisfied:
+            logger.info(f"[SATISFACTION_CHECKER] Action SATISFIED: {result.rationale}")
+            return {
+                "user_action": None,
+                "action_intent": None,
+                "action_tickers": [],
+                "action_type": None,
+                "cycle_logs": [{"node": "satisfaction_checker", "event": f"Goal satisfied: {result.rationale}"}]
+            }
+        else:
+            logger.info(f"[SATISFACTION_CHECKER] Action PENDING: {result.rationale}")
+            return {
+                "cycle_logs": [{"node": "satisfaction_checker", "event": f"Goal pending (will continue next cycle): {result.rationale}"}]
+            }
+    except Exception as e:
+        logger.error(f"[SATISFACTION_CHECKER] Error: {e}")
+        return {}

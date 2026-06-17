@@ -19,6 +19,12 @@ class MarketDiscovery(BaseModel):
 class ValidationResult(BaseModel):
     is_valid: bool = Field(description="True if the user input represents a valid and relevant market sector or trading topic, False otherwise.")
     refined_action: str = Field(description="The cleaned and refined market topic based on web search (or the original if already perfect). If is_valid is False, provide a brief reason.")
+    intent: Literal["MARKET_EXPLORATION", "DIRECT_ACTION", "THEMATIC_ACTION"] = Field(
+        default="MARKET_EXPLORATION",
+        description="The intent of the user. DIRECT_ACTION for explicit trades (e.g. 'Sell 5 AAPL'). THEMATIC_ACTION for portfolio-wide goals (e.g. 'Balance portfolio'). MARKET_EXPLORATION for general exploration."
+    )
+    extracted_tickers: List[str] = Field(default_factory=list, description="For DIRECT_ACTION, the list of specific tickers targeted.")
+    extracted_action: str = Field(default="", description="For DIRECT_ACTION or THEMATIC_ACTION, the explicit action like 'sell', 'buy', 'liquidate', etc.")
 
 # Output Schema for the DECISOR node
 class TradeDecision(BaseModel):
@@ -36,6 +42,10 @@ class AgentState(TypedDict):
     recent_history: List[Dict[str, Any]]  # Le ultime N operazioni lette dal DB all'inizio del ciclo
     
     user_action: Optional[str]            # Azione esplicita richiesta dall'utente
+    
+    action_intent: Optional[str]          # Intent classificato (DIRECT_ACTION, ecc)
+    action_tickers: List[str]             # Ticker espliciti se DIRECT_ACTION
+    action_type: Optional[str]            # Azione esplicita (es. "sell")
     
     market_themes: List[str]              # Es: ["AI regulation", "Oil supply shortage"]
     candidate_tickers: Dict[str, str]          # I ticker scoperti dall'agente da analizzare

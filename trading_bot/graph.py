@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, START, END
 from .state import AgentState
 
 logger = logging.getLogger(__name__)
-from .nodes import init_portfolio_node, load_history_node, discovery_node , quant_enrichment_node,decisor_node, executer_node, summarizer, user_input_validator_node
+from .nodes import init_portfolio_node, load_history_node, discovery_node , quant_enrichment_node,decisor_node, executer_node, summarizer, user_input_validator_node, satisfaction_checker_node
 
 def check_for_errors(state: AgentState) -> str:
     if state.get("error_message"):
@@ -29,6 +29,7 @@ workflow.add_node("quant_enrichment", quant_enrichment_node)
 workflow.add_node("decisor", decisor_node) 
 workflow.add_node("executer", executer_node)
 workflow.add_node("summarizer", summarizer)
+workflow.add_node("satisfaction_checker", satisfaction_checker_node)
 
 workflow.add_edge(START, "init_portfolio")
 workflow.add_conditional_edges(
@@ -72,6 +73,7 @@ workflow.add_conditional_edges(
 """
 workflow.add_edge("executer", "summarizer")
 
-workflow.add_edge("summarizer", END)
+workflow.add_edge("summarizer", "satisfaction_checker")
+workflow.add_edge("satisfaction_checker", END)
 
 app = workflow.compile()
