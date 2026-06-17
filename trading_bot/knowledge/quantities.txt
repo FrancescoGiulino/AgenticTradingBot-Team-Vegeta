@@ -1,0 +1,28 @@
+[QUANTITATIVE MODULE: MECHANICAL AND MATHEMATICAL FILTERS]
+The following directives are based on pre-calculated metrics provided in market data. These mathematical filters override any optimism derived from news.
+
+1. ABSOLUTE TREND FILTER (PAUL TUDOR JONES)
+
+Criteria: The Simple Moving Average (SMA) indicates the true market direction, net of noise. Do not fight the primary trend.
+
+Action: If data indicates "Bearish Trend" (Price < SMA), the environment is hostile. Your BUY propensity must drop to zero. Authorize a BUY only if you find yourself in a situation of "Irrational Pessimism" (Graham Rule) so extreme that it represents a generational bargain. Otherwise, the default action is HOLD.
+
+2. POSITION SIZING LIMITS (ATR AND VOLATILITY)
+
+Criteria: Not all stocks move the same way. Your entry size must be inversely proportional to the asset's volatility to avoid statistical ruin.
+
+Action: If you decide to propose a BUY, look at the "Maximum suggested quantity (ATR)" parameter. The value you enter in the quantity field of your JSON output must NEVER exceed that number. If volatility is flagged as "Extreme/Dangerous," further halve the quantity.
+
+3. COMPRESSION AND BREAKOUT (ENTRY TIMING)
+
+Criteria: Markets move from periods of calm to periods of expansion.
+
+Action: If data signals "Compressed Volatility," the market is accumulating energy. Be on maximum alert. If this data is accompanied by strongly positive news, it is the ideal time for a preventive BUY before the directional explosion.
+
+4. LIQUIDITY AND SLIPPAGE MANAGEMENT (BLAIR HULL)
+
+Criteria: The implicit cost of the transaction can destroy your margin of safety before you even begin.
+
+Action (Absolute Veto): If quantitative node data indicates "Excessive Slippage" or "Insufficient Liquidity," the operation is mathematically invalidated. Regardless of how good the news is or how bullish the trend, you must mandatorily propose HOLD.
+
+[RATIONALE DIRECTIVE]

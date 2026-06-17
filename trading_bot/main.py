@@ -1,7 +1,7 @@
 import time
 import logging
 from .graph import app
-from .db import init_db
+from trading_bot.services.database_instance import DbInstance
 from datetime import datetime
 from dotenv import load_dotenv
 from .rate_limiter import rate_limiter
@@ -65,8 +65,7 @@ def user_input_thread():
 def main():
     print_header()
     
-    # Initialize Database
-    init_db()
+    db = DbInstance()
     
     # Load Rate Limits Configuration
     rate_limiter.load_config("rate_limits.json")

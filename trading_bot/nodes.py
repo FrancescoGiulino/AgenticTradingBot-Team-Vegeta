@@ -1,19 +1,31 @@
 import os
 import logging
 
-from trading_bot.knowledge_manager import knowledge_base
+from trading_bot.knowledge.knowledge_manager import knowledge_base
 
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .state import AgentState, TradeDecision, DynamicWatchlist
+from .state import AgentState, MarketDiscovery, TradeDecision, DynamicWatchlist
 from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
 from .rate_limiter import rate_limiter
-import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
-from .db import log_trade_journal
+# from .db import log_trade_journal
 from .config import shared_config
+from trading_bot.utils.cache import DiscoveryCache
+from trading_bot.services.alpaca_service import AlpacaService
+from alpaca.data.historical.news import NewsClient
+from alpaca.data.requests import NewsRequest, StockBarsRequest
+import pandas as pd
+from alpaca.data.timeframe import TimeFrame
+from trading_bot.services.alpaca_service import AlpacaService
+from trading_bot.state import AgentState
+from alpaca.data.enums import DataFeed
+from alpaca.trading.requests import GetOrdersRequest
+from alpaca.trading.enums import QueryOrderStatus
+
+from trading_bot.services.database_instance import DbInstance
 
 # Initialize the LLM
 llm = ChatGoogleGenerativeAI(
@@ -21,176 +33,371 @@ llm = ChatGoogleGenerativeAI(
     api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0.15,
     timeout=60.0,
-    max_retries=1
+    max_retries=5
 )
 
-def init_portfolio(state: AgentState) -> dict:
+def init_portfolio_node(state: AgentState) -> dict:
     """
-    Node: INIT_PORTFOLIO
-    Fetches portfolio, checks for user interruptions, and generates a watchlist.
+    INITIAL NODE: Retrieves Alpaca's user current state.
     """
-    logger.info("[NODE] INIT_PORTFOLIO: Fetching portfolio data ")
-    
-    portfolio_data = get_portfolio_status.invoke({})
-    error_msg = portfolio_data.get("error")
-    
-    if error_msg:
-        logger.warning(f" [WARNING] INIT_PORTFOLIO error: {error_msg} ")
-        return {"portfolio": {}, "error_message": error_msg}
+    try:
+        # Giustissimo l'uso del rate limiter!
+        rate_limiter.acquire("alpaca_rpm") 
+        trading_client = AlpacaService().client
 
-    # 1. Leggiamo la memoria condivisa per vedere se l'utente ha inserito comandi
-    current_focus, has_changed = shared_config.get_focus_and_reset_flag()
-    target_tickers = list(state.get("target_tickers", []))
-    
-    # 2. Se l'utente ha cambiato focus, FORZIAMO lo svuotamento della watchlist
-    if has_changed:
-        logger.info(f"--- [SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist! ---")
-        target_tickers = [] # Questo costringerà l'Esploratore ad attivarsi
+        account = trading_client.get_account()
+        positions = trading_client.get_all_positions()
         
-    # 3. DYNAMIC WATCHLIST GENERATION
-    if not target_tickers:
-        logger.info(f"[EXPLORER] Watchlist empty. Generating new dynamic tickers for sector: {current_focus}...")
-        explorer_prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Output MUST follow the JSON schema."),
-            ("human", "Generate tickers for this focus: {focus}")
-        ])
+        portfolio_positions = {}
+        for pos in positions:
+            portfolio_positions[pos.symbol] = {
+                "qty": float(pos.qty),
+                "avg_entry_price": float(pos.avg_entry_price), 
+                "current_price": float(pos.current_price),    
+                "market_value": float(pos.market_value),
+                "unrealized_pl": float(pos.unrealized_pl),    
+                "unrealized_plpc": float(pos.unrealized_plpc)  
+            }
+        order_request = GetOrdersRequest(status=QueryOrderStatus.OPEN)
+        open_orders = trading_client.get_orders(order_request)
+        pending_tickers = [order.symbol for order in open_orders]
+
+        portfolio_data = {
+            "cash": float(account.cash),
+            "buying_power": float(account.buying_power),       
+            "portfolio_value": float(account.portfolio_value),
+            "daytrade_count": int(account.daytrade_count),     
+            "positions": portfolio_positions,
+            "pending_orders": pending_tickers
+        }
         
-        explorer_chain = explorer_prompt | llm.with_structured_output(DynamicWatchlist)
-        try:
-            watchlist_result = explorer_chain.invoke({"focus": current_focus})
-            target_tickers = watchlist_result.tickers
-            logger.info(f"[EXPLORER] New Watchlist Created: {target_tickers}. Rationale: {watchlist_result.rationale}")
-        except Exception as e:
-            logger.error(f"[ERROR] EXPLORER failed to generate watchlist: {e}")
-            target_tickers = ["AAPL", "MSFT"] # Fallback
+        logger.info(f"[INIT_PORTFOLIO]: obtained initial data: {portfolio_data}")
+        return {
+            "portfolio": portfolio_data,
+            "cycle_logs": [{"node": "init_portfolio", "event": "Portfolio synced successfully."}]
+        }
 
-    return {
-        "portfolio": portfolio_data,
-        "target_tickers": target_tickers,
-        "market_focus": current_focus, # Salviamo il focus aggiornato nello stato
-        "error_message": None 
-    }
+    except Exception as e:
+        return {
+            "error_message": f"CRITICAL - Failed to retrieve portfolio: {str(e)}",
+            "cycle_logs": [{"node": "init_portfolio", "event": "ERROR", "message": str(e)}]
+        }
 
+def load_history_node(state: AgentState) -> dict:
+    """
+    MEMORY NODE: Retrieves the last operations on the local database 
+    to provide the agent some context about it's recent actions
+    """
+    try:
+        db = DbInstance()
+        recent_trades = db.get_recent_trades()
+        
+        logger.info(f"[HISTORY]: obtained recent trading data")
+
+        return {
+            "recent_history": recent_trades,
+            "cycle_logs": [{"node": "load_history", "event": f"Loaded {len(recent_trades)} trades."}]
+        }
+    except Exception as e:
+        return {
+            "recent_history": [],
+            "error_message": f"CRITICAL - Failed to retrieve recent history: {str(e)}",
+            }
+
+def discovery_node(state: AgentState) -> dict:
+    """
+    DISCOVERY NODE: Reads Alpaca News and uses LLM to find 
+    daily trends and tickers to analyze
+    """
+    try:
+        cache_manager = DiscoveryCache()
+        cached_data = cache_manager.get_cached_discovery()
+
+        if cached_data:
+            logger.info("[DISCOVERY] CACHE HIT! Loading candidates from memory.")
+            return {
+                "market_themes": cached_data["market_themes"],
+                "candidate_tickers": cached_data["candidate_tickers"],
+                "cycle_logs": [{"node": "discovery", "event": "CACHE HIT: Skipped API and LLM calls."}]
+            }
+        
+        alpaca = AlpacaService()
+        news_client = alpaca.news_client
+        
+        # Richiesta delle ultime 15 news
+        request_params = NewsRequest(limit=30)
+        response = news_client.get_news(request_params)
+        
+        # --- ESTRAZIONE SICURA DELLE NEWS (Correzione Bug) ---
+        if hasattr(response, "news"):
+            raw_news = response.news  # SDK ufficiale alpaca-py (Lista di oggetti News)
+        elif hasattr(response, "data"):
+            raw_news = response.data  # Altre varianti SDK
+        elif isinstance(response, dict):
+            raw_news = response.get("news", [])  # Se la risposta è un dict JSON grezzo
+        else:
+            raw_news = response
+
+        # Se per qualche motivo raw_news fosse ancora un dizionario, prendiamo i suoi valori
+        if isinstance(raw_news, dict):
+            raw_news = raw_news.get("news", list(raw_news.values()))
+        
+        news_entries = []
+        for item in raw_news:
+            # Estraiamo i campi controllando se item è un dizionario o un oggetto SDK
+            if isinstance(item, dict):
+                headline = item.get("headline", "No Title")
+                summary = item.get("summary", "No Summary Available")
+                symbols_list = item.get("symbols", [])
+            else:
+                headline = getattr(item, "headline", "No Title")
+                summary = getattr(item, "summary", "No Summary Available")
+                symbols_list = getattr(item, "symbols", [])
+
+            if symbols_list is None:
+                symbols_list = []
+            
+            symbols_str = ", ".join(symbols_list)
+            
+            entry = f"TITLE: {headline}\nSUMMARY: {summary}\nRELATED SYMBOLS: {symbols_str}"
+            news_entries.append(entry)
+            
+        news_text = "\n\n".join(news_entries)
+        logger.info(f"[DISCOVERY]: Successfully parsed {len(news_entries)} news entries.")
+        
+        
+        prompt = f"""
+        You are an elite quantitative research analyst.
+        Read the following recent market news and identify the driving macroeconomic themes.
+        Then, select the top 5 to 10 stock tickers that represent the most volatile or interesting 
+        opportunities based on these news.
+        
+        MARKET NEWS:
+        {news_text}
+        """
+
+        structured_llm = llm.with_structured_output(MarketDiscovery)
+        discovery_result = structured_llm.invoke(prompt)
+
+        # Sanitizzazione e pulizia dei Ticker (forziamo chiavi maiuscole nel nuovo formato Dict)
+        clean_candidates = {
+            ticker.upper().strip(): rationale 
+            for ticker, rationale in discovery_result.candidate_tickers.items()
+        }
+
+        # Salviamo nella cache
+        cache_manager.set_discovery(discovery_result.market_themes, clean_candidates)
+
+        # logger.info(f"{discovery_result.market_themes} : {clean_candidates")
+
+        return {
+            "market_themes": discovery_result.market_themes,
+            "candidate_tickers": clean_candidates,
+            "cycle_logs": [{"node": "discovery", "event": f"Found {len(clean_candidates)} candidates."}]
+        }
+        
+    except Exception as e:
+        logger.error(f"[ERROR] Discovery node failed: {str(e)}")
+        return {
+            "error_message": f"Discovery node failed: {str(e)}",
+            "cycle_logs": [{"node": "discovery", "event": "ERROR", "message": str(e)}]
+        }
 decisor_llm = llm.with_structured_output(TradeDecision)
 
-def decisor(state: AgentState) -> dict:
+def quant_enrichment_node(state: AgentState) -> dict:
+    """
+    NODO QUANTITATIVO: Scarica lo storico prezzi e calcola SMA, ATR e Liquidità.
+    Nessun LLM coinvolto, solo matematica pura.
+    """
+    logger.info("[NODE] QUANT: Calculating technical metrics...")
+    
+    try:
+        alpaca = AlpacaService()
+        hist_client = alpaca.historical_client
+        
+        # 1. Raccogliamo tutti i ticker da analizzare (Portafoglio + Candidati News)
+        portfolio_tickers = list(state.get("portfolio", {}).get("positions", {}).keys())
+        candidate_tickers = list(state.get("candidate_tickers", {}).keys())
+        all_tickers = list(set(portfolio_tickers + candidate_tickers))
+        
+        if not all_tickers:
+            return {"quant_data": {}}
+
+        # 2. Prepariamo la richiesta dati ad Alpaca (ultimi 100 giorni solari)
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=100)
+        
+        request_params = StockBarsRequest(
+            symbol_or_symbols=all_tickers,
+            timeframe=TimeFrame.Day,
+            start=start_date,
+            end=end_date,
+            feed=DataFeed.IEX
+        )
+        
+        bars = hist_client.get_stock_bars(request_params).df
+        quant_results = {}
+
+        # 3. Calcolo degli indicatori per ogni ticker
+        for ticker in all_tickers:
+            try:
+                # Alpaca restituisce un MultiIndex DataFrame (symbol, timestamp)
+                ticker_df = bars.loc[ticker].copy()
+                
+                if ticker_df.empty or len(ticker_df) < 50:
+                    logger.warning(f"[QUANT] Not enough data for {ticker}. Skipping math.")
+                    continue
+                
+                # Prezzo attuale e Volume
+                current_price = float(ticker_df['close'].iloc[-1])
+                avg_volume = int(ticker_df['volume'].tail(20).mean())
+                
+                # --- CALCOLO SMA 50 ---
+                ticker_df['SMA_50'] = ticker_df['close'].rolling(window=50).mean()
+                sma_50 = float(ticker_df['SMA_50'].iloc[-1])
+                
+                # --- CALCOLO ATR 14 ---
+                high_low = ticker_df['high'] - ticker_df['low']
+                high_close = (ticker_df['high'] - ticker_df['close'].shift()).abs()
+                low_close = (ticker_df['low'] - ticker_df['close'].shift()).abs()
+                ranges = pd.concat([high_low, high_close, low_close], axis=1)
+                true_range = ranges.max(axis=1)
+                atr_14 = float(true_range.rolling(window=14).mean().iloc[-1])
+                
+                # --- RISK SIZING ---
+                # Quante azioni posso comprare rischiando massimo 100$ di oscillazione base?
+                risk_budget_usd = 100.0 
+                suggested_qty = int(risk_budget_usd / atr_14) if atr_14 > 0 else 0
+
+                # --- LIQUIDITY FLAG (Blair Hull) ---
+                if avg_volume < 500000:
+                    liquidity_status = "Insufficient liquidity / Excessive slippage risk"
+                else:
+                    liquidity_status = "Liquidity OK"
+
+                # --- COMPRESSION FLAG (Bollinger / Basic ATR) ---
+                compression_ratio = (atr_14 / current_price) * 100 if current_price > 0 else 0
+                if compression_ratio < 1.5:
+                    volatility_status = "Compressed Volatility (Imminent Breakout Risk)"
+                elif compression_ratio > 5.0:
+                    volatility_status = "Extreme/Dangerous Volatility (Reduce size)"
+                else:
+                    volatility_status = "Normal Volatility"
+
+                # --- DICTIONARY ASSIGNMENT ---
+                quant_results[ticker] = {
+                    "current_price": round(current_price, 2),
+                    "trend": "Bearish trend (Price < SMA)" if current_price < sma_50 else "Bullish trend (Price > SMA)",
+                    "atr_14": round(atr_14, 2),
+                    "volatility_status": volatility_status,
+                    "suggested_max_qty_based_on_volatility": suggested_qty,
+                    "liquidity": liquidity_status
+                }
+                
+            except KeyError:
+                logger.warning(f"[QUANT] Ticker {ticker} not found in historical data.")
+                continue
+        logger.info(f"[QUANT] Successfully calculated metrics for {len(quant_results)} tickers.")
+        
+        return {
+            "quant_data": quant_results,
+            "cycle_logs": [{"node": "quant_enrichment", "event": f"Calculated math for {len(quant_results)} assets."}]
+        }
+
+    except Exception as e:
+        logger.error(f"[ERROR] Quant node failed: {str(e)}")
+        return {
+            "error_message": f"Quant math failed: {str(e)}",
+            "cycle_logs": [{"node": "quant_enrichment", "event": "ERROR", "message": str(e)}]
+        }
+
+def decisor_node(state: AgentState) -> dict:
     """Node: DECISOR"""
     logger.info("[NODE] DECISOR: Analyzing market and reasoning ")
     
     portfolio = state.get("portfolio", {})
-    target_tickers = state.get("target_tickers", ["AAPL"])
-    current_ticker = target_tickers[0] if target_tickers else "AAPL"
+    recent_history = state.get("recent_history", {})
+    market_themes = state.get("market_themes",[])
+    candidate_tickers = state.get("candidate_tickers", {})
+    quant_data = state.get("quant_data", {})
+    pending_orders = state.get("pending_orders",[])
+    # TODO change location?
     
     error_message = state.get("error_message")
     
     if error_message:
         logger.warning(f" [WARNING] DECISOR detected an error: {error_message}. Defaulting to HOLD. ")
-        fallback_decision = TradeDecision(
-            ticker=current_ticker, action="HOLD", quantity=0, news_summary="N/A",
-            current_price=0.0, rationale=f"System error upstream: {error_message}."
+        decision = TradeDecision(
+            ticker="none", action="HOLD", quantity=0.0, confidence_score=1.0,
+            rationale=f"Fallback forced due to previous node error: {error_message}"
         )
-        return {"proposed_decision": fallback_decision}
-
-    price_data = get_stock_price.invoke(current_ticker)
+        return {"proposed_decision": decision}    
     
-    logger.info(f"[DECISOR] Fetching news for {current_ticker}... ")
-    news_data = get_stock_news.invoke(current_ticker)
+    logger.info(f"[DECISOR] Fetching news for {candidate_tickers}... ")
 
+    # TODO add info properly!
     prompt_info = knowledge_base.get_knowledge("the_intelligent_investor.txt")
+    quantity_info = knowledge_base.get_knowledge("quantities.txt")
 
     # Prepare the system prompt enforcing your exact business rules
     prompt = ChatPromptTemplate.from_messages([
         ("system", f"""You are an active and strategic AI Trading Agent.
-        Your output MUST be based ONLY on the provided data. Do not hallucinate prices or news.
         
         {prompt_info}
+        {quantity_info}
 
-        Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying to deploy initial capital if rule 2 triggers)."""),
+        Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying the ticker X to deploy initial capital if rule Y triggers)."""),
         ("human", """
         Portfolio Status: {portfolio}
-        Target Ticker: {ticker}
-        Current Price Data: {price_data}
-        Recent News: {news_data}
+        Recent History: {recent_history}
+        Hot Market Themes: {market_themes} 
+        Candidate Tickers: {candidate_tickers}
+        Pending Orders: {pending_orders}
+        Quantities: {quant_data} 
         
-        Formulate your final decision.""")
+        You must ALWAYS check the 'pending_orders' list inside the Portfolio Status.
+        If a ticker has a pending order, the market is either closed or the order is awaiting execution. 
+            - You MUST NOT propose a BUY or SELL for any ticker listed in 'pending_orders'.
+            - If your top candidate is in the pending list, you must skip it and evaluate the next best candidate, or propose HOLD.
+            - DO NOT stack multiple orders on the same asset.
+         
+        **Now hunt. Capital is meant to grow, not to be preserved.**
+        [RATIONALE DIRECTIVE]
+        When filling out the rationale field, you must explicitly state which module made the decision and why it was prioritized over others.
+            - Example BUY: "Priority 2 (Graham module). Portfolio is safe. Exploited irrational panic on a solid asset. Ignored other candidates lacking margin of safety."
+            - Example SELL: "Priority 1 (Schwager module). Executed mechanical stop-loss to limit damage. Ignored BUY candidates to focus on capital preservation.""")
     ])
     
     reasoning_chain = prompt | decisor_llm
     
     try:
         # Rate limiting logic
-        prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data)
-        estimated_tokens = len(prompt_str) // 4
-        rate_limiter.acquire("google_genai_rpm", 1)
-        rate_limiter.acquire("google_genai_tpm", estimated_tokens)
+        #prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data)
+        #estimated_tokens = len(prompt_str) // 4
+        #rate_limiter.acquire("google_genai_rpm", 1)
+        #rate_limiter.acquire("google_genai_tpm", estimated_tokens)
         
         decision = reasoning_chain.invoke({
-            "portfolio": portfolio, "ticker": current_ticker, "price_data": price_data, "news_data": news_data
+            "portfolio": portfolio, "recent_history": recent_history, "market_themes": market_themes, "candidate_tickers": candidate_tickers, "quant_data": quant_data,
+            "pending_orders": pending_orders
         })
     except Exception as e:
         logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
+        # TODO change location?
+        
         decision = TradeDecision(
-            ticker=current_ticker, action="HOLD", quantity=0, news_summary="N/A",
-            current_price=0.0, rationale=f"LLM processing error: {str(e)}."
+            ticker="NO-TICK", action="HOLD", quantity=0.0, confidence_score=1.0,
+            rationale=f"LLM processing error: {str(e)}."
         )
-
+        
     return {"proposed_decision": decision}
 
-def checker(state: AgentState) -> dict:
-    """Node: CHECKER"""
-    logger.info("[NODE] CHECKER: Validating feasibility of the decision ")
-    
-    decision = state.get("proposed_decision")
-    portfolio = state.get("portfolio", {})
-    
-    if not decision:
-        logger.error("[ERROR] CHECKER: No decision found to validate. ")
-        return {"is_decision_valid": False}
-        
-    action = decision.action.upper()
-    ticker = decision.ticker
-    quantity = decision.quantity
-    
-    if action in ["BUY", "SELL"] and quantity <= 0:
-        logger.info(f"[CHECKER] REJECTED: Quantity must be > 0. Proposed quantity is {quantity}. ")
-        return {"is_decision_valid": False}
-    
-    if action == "HOLD":
-        logger.info("[CHECKER] Action is HOLD. Accepted automatically. ")
-        return {"is_decision_valid": True}
-        
-    elif action == "SELL":
-        positions = portfolio.get("positions", {})
-        if ticker in positions and positions[ticker]["qty"] >= quantity:
-            logger.info(f"[CHECKER] Sufficient shares owned to SELL {quantity} {ticker}. Accepted. ")
-            return {"is_decision_valid": True}
-        else:
-            logger.info(f"[CHECKER] REJECTED: Not enough shares of {ticker} to sell. ")
-            return {"is_decision_valid": False}
-            
-    elif action == "BUY":
-        cash_available = portfolio.get("cash", 0.0)
-        estimated_cost = quantity * decision.current_price
-        if cash_available >= estimated_cost:
-            logger.info(f"[CHECKER] Sufficient cash to BUY {quantity} {ticker}. Accepted. ")
-            return {"is_decision_valid": True}
-        else:
-            logger.info(f"[CHECKER] REJECTED: Insufficient cash. ")
-            return {"is_decision_valid": False}
-            
-    return {"is_decision_valid": False}
-
-def executer(state: AgentState) -> dict:
+def executer_node(state: AgentState) -> dict:
     """Node: EXECUTER"""
     logger.info("[NODE] EXECUTER: Executing the trade ")
     
     decision = state.get("proposed_decision")
-    is_valid = state.get("is_decision_valid", False)
     
-    if not is_valid or not decision or decision.action.upper() == "HOLD":
-        logger.info("[EXECUTER] No execution required (Action is HOLD or Invalid). ")
-        return {} 
-        
     logger.info(f"[EXECUTER] Sending order to Alpaca: {decision.action} {decision.quantity} {decision.ticker} ")
     
     execution_result = execute_trade.invoke({
@@ -204,58 +411,36 @@ def executer(state: AgentState) -> dict:
     logger.info(f"[EXECUTER] Order successful! Order ID: {execution_result.get('order_id')} ")
     return {"error_message": None}
 
+# unused for now!
 def summarizer(state: AgentState) -> dict:
     """Node: SUMMARIZER"""
     logger.info("[NODE] SUMMARIZER: Logging journal and cleaning state ")
-    
-    decision = state.get("proposed_decision")
-    is_valid = state.get("is_decision_valid", False)
-    error_message = state.get("error_message")
-    last_n = state.get("last_n_actions", [])
-    
-    # DYNAMIC WATCHLIST MANAGEMENT: Remove the ticker we just processed
-    target_tickers = list(state.get("target_tickers", []))
-    if target_tickers:
-        target_tickers.pop(0) # Pop the first item off the list
-    
-    MAX_N = 5
-    
-    if error_message: outcome = f"FAILED: {error_message}"
-    elif not is_valid and decision: outcome = "REJECTED BY CHECKER"
-    elif decision: outcome = f"SUCCESSFULLY EXECUTED {decision.action}"
-    else: outcome = "UNKNOWN / NO DECISION"
+    db = DbInstance()
 
-    journal_entry = {
-        "timestamp": datetime.now().isoformat(),
-        "ticker": decision.ticker if decision else "N/A",
-        "action": decision.action if decision else "HOLD",
-        "quantity": decision.quantity if decision else 0,
-        "price": decision.current_price if decision else 0.0,
-        "news_summary": decision.news_summary if decision else "N/A",
-        "rationale": decision.rationale if decision else "No decision generated due to system constraints.",
-        "outcome": outcome
-    }
-    
     cycle_id = state.get("cycle_id") or f"cycle-{int(time.time())}"
-    success = log_trade_journal(
-        cycle_id=cycle_id, agent_type="decisor", ticker=journal_entry["ticker"],
-        action=journal_entry["action"], quantity=journal_entry["quantity"],
-        price=journal_entry["price"], news_summary=journal_entry["news_summary"],
-        rationale=journal_entry["rationale"], outcome=journal_entry["outcome"],
+    decision = state.get("proposed_decision")
+    
+    if state.get("error_message"):
+        logger.error(f"[NODE] SUMMARIZER: Unable to summarize ({state.get("error_message")})")
+        return{
+            "error_message": None,
+            "proposed_decision": None
+        }
+    
+    success = db.log_trade_journal(
+        cycle_id=cycle_id, 
+        agent_type="decisor", 
+        ticker=decision.ticker,
+        action=decision.action, 
+        quantity=decision.quantity,
+        rationale=decision.rationale, 
+        outcome="success", # <--- TODO change!!!
         data_sources="Alpaca, yfinance"
     )
-    
-    if success: logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
-    
-    updated_last_n = list(last_n)
-    updated_last_n.append({"ticker": journal_entry["ticker"], "action": journal_entry["action"], "outcome": journal_entry["outcome"]})
-    if len(updated_last_n) > MAX_N: updated_last_n.pop(0)
 
-    return {
-        "target_tickers": target_tickers, # 🟢 Restituiamo la lista aggiornata (accorciata) per il prossimo ciclo
-        "last_n_actions": updated_last_n,
-        "journal": [journal_entry], 
-        "proposed_decision": None,  
-        "is_decision_valid": False, 
-        "error_message": None       
+    if success: logger.info(f"[SUMMARIZER] Successfully appended log to SQLite database ")
+
+    return {  
+        "proposed_decision": None,
+        "error_message": None
     }

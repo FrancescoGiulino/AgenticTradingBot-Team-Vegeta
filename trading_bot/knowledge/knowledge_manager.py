@@ -31,10 +31,8 @@ class KnowledgeManager:
         # LISTA ESATTA DEI TUOI FILE
         # Assicurati che i nomi corrispondano esattamente ai file creati
         files_to_load = [
-            "master_strategy.txt",
-            "quantitative_filters.txt",
-            "benjamin_graham_rules.txt", # (o the_intelligent_investor.txt)
-            "jack_schwager_rules.txt"
+            "the_intelligent_investor.txt",
+            "quantities.txt"
         ]
         
         if not os.path.exists(base_dir):
