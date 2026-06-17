@@ -134,10 +134,10 @@ def researcher_node(state: AgentState) -> dict:
     
     #TODO: This is an atonomous exploration based on Market Focus, we want to allow teh AI to search non focused markets
     if not command:
-        logger.info(f"[RESEARCHER] Autonomous mode. Generating watchlist for focus: {market_focus}. Avoiding: {analyzed_tickers}")
+        logger.info(f"[RESEARCHER] Autonomous mode. Generating watchlist for suggested focus: {market_focus}. Avoiding: {analyzed_tickers}")
         explorer_prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Do NOT suggest any tickers from this list: {analyzed_tickers}. Provide a brief rationale in 'research_context'."),
-            ("human", "Generate tickers for this focus: {focus}")
+            ("system", "You are an expert financial researcher. The given market sector/focus is just a SUGGESTION. You are encouraged to explore other promising fields or unrelated high-potential tickers if you see fit. Output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Do NOT suggest any tickers from this list: {analyzed_tickers}. Provide a brief rationale in 'research_context', explaining your choice of fields."),
+            ("human", "Suggested focus: {focus}\nGenerate tickers based on this suggestion or explore other high-potential fields.")
         ])
         
         explorer_chain = explorer_prompt | llm.with_structured_output(ResearchOutput)
@@ -209,10 +209,10 @@ PORTFOLIO SUMMARY:
 {state.get("portfolio_summary")}
 
 Follow these strict rules:
-1. If there is a USER COMMAND, evaluate if it can be executed given the portfolio status and market data.
+1. If there is a USER COMMAND, treat it as a SUGGESTION, NOT an absolute order. You MUST validate it for safety and financial viability. If it is deemed unsafe, extremely risky, or lacking logical financial backing (e.g., buying a crashing stock without good reason), you MUST abort by proposing "HOLD", and clearly log the safety concerns in your rationale to avoid doing damages.
 2. If there is NO user command, use your discretion to buy (if lots of cash and positive news), sell (if holding in loss or bad news), or hold.
 3. CRITICAL CONSTRAINT: You cannot "SELL" 0 shares or "BUY" 0 shares. If your calculated quantity for a BUY or SELL is 0, you MUST propose "HOLD" instead.
-4. Set 'cleared_wanted_action' to true if you are successfully addressing the user command in this cycle.
+4. Set 'cleared_wanted_action' to true if you are successfully addressing the user command in this cycle, or if you are rejecting it due to safety reasons (so it doesn't repeat indefinitely).
 
 Provide a detailed, explicit 'rationale' explaining exactly why you chose this action based on the user's command and market data."""
 
@@ -372,7 +372,7 @@ def summarizer(state: AgentState) -> dict:
     if decision and decision.ticker and decision.ticker != "N/A":
         if decision.ticker not in analyzed_tickers:
             analyzed_tickers.append(decision.ticker)
-            if len(analyzed_tickers) > 50:
+            if len(analyzed_tickers) > 30:
                 analyzed_tickers.pop(0)
 
     return {

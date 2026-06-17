@@ -5,7 +5,7 @@ from .db import init_db
 from datetime import datetime
 from dotenv import load_dotenv
 from .rate_limiter import rate_limiter
-import threading
+# import threading
 from .config import shared_config
 import json
 import os
@@ -63,13 +63,9 @@ def user_input_thread():
 
 def main():
     print_header()
-    
-    # Initialize Database
     init_db()
     
-    # Load Rate Limits Configuration
     rate_limiter.load_config("rate_limits.json")
-
 
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
     

@@ -22,7 +22,6 @@ def supervisor_router(state: AgentState) -> str:
 
 workflow = StateGraph(AgentState)
 
-# Add all nodes
 workflow.add_node("init_portfolio", init_portfolio)
 workflow.add_node("supervisor", supervisor_node)
 workflow.add_node("researcher", researcher_node)
@@ -31,11 +30,9 @@ workflow.add_node("checker", checker)
 workflow.add_node("executer", executer)
 workflow.add_node("summarizer", summarizer)
 
-# Start sequence
 workflow.add_edge(START, "init_portfolio")
 workflow.add_edge("init_portfolio", "supervisor")
 
-# Supervisor routing
 workflow.add_conditional_edges(
     "supervisor",
     supervisor_router,
@@ -49,7 +46,6 @@ workflow.add_conditional_edges(
     }
 )
 
-# All workers return control to the supervisor
 workflow.add_edge("researcher", "supervisor")
 workflow.add_edge("decisor", "supervisor")
 workflow.add_edge("checker", "supervisor")
