@@ -1,6 +1,8 @@
 import os
 import logging
 
+from langchain_openai import ChatOpenAI
+
 from trading_bot.knowledge.knowledge_manager import knowledge_base
 
 logger = logging.getLogger(__name__)
@@ -28,12 +30,22 @@ from alpaca.trading.enums import QueryOrderStatus
 from trading_bot.services.database_instance import DbInstance
 
 # Initialize the LLM
-llm = ChatGoogleGenerativeAI(
-    model="gemma-4-31b-it",
-    api_key=os.getenv("GOOGLE_API_KEY"),
+llm = ChatOpenAI(
+    base_url="http://localhost:1234/v1",
+    api_key="lm-studio",
+    model="local-model",
     temperature=0.15,
     timeout=60.0,
-    max_retries=5
+    max_retries=1
+)
+
+llm_local = ChatOpenAI(
+    base_url="http://localhost:1234/v1",
+    api_key="lm-studio",
+    model="local-model",
+    temperature=0.15,
+    timeout=60.0,
+    max_retries=1
 )
 
 def init_portfolio_node(state: AgentState) -> dict:
@@ -71,9 +83,12 @@ def init_portfolio_node(state: AgentState) -> dict:
             "pending_orders": pending_tickers
         }
         
+        action, changed = shared_config.get_action_and_reset_flag()
+        
         logger.info(f"[INIT_PORTFOLIO]: obtained initial data: {portfolio_data}")
         return {
             "portfolio": portfolio_data,
+            "user_action": action,
             "cycle_logs": [{"node": "init_portfolio", "event": "Portfolio synced successfully."}]
         }
 
@@ -321,6 +336,7 @@ def decisor_node(state: AgentState) -> dict:
     candidate_tickers = state.get("candidate_tickers", {})
     quant_data = state.get("quant_data", {})
     pending_orders = state.get("pending_orders",[])
+    user_action = state.get("user_action")
     # TODO change location?
     
     error_message = state.get("error_message")
@@ -350,6 +366,7 @@ def decisor_node(state: AgentState) -> dict:
         ("human", """
         Portfolio Status: {portfolio}
         Recent History: {recent_history}
+        User Action Requested: {user_action}
         Hot Market Themes: {market_themes} 
         Candidate Tickers: {candidate_tickers}
         Pending Orders: {pending_orders}
@@ -378,7 +395,7 @@ def decisor_node(state: AgentState) -> dict:
         #rate_limiter.acquire("google_genai_tpm", estimated_tokens)
         
         decision = reasoning_chain.invoke({
-            "portfolio": portfolio, "recent_history": recent_history, "market_themes": market_themes, "candidate_tickers": candidate_tickers, "quant_data": quant_data,
+            "portfolio": portfolio, "recent_history": recent_history, "user_action": user_action, "market_themes": market_themes, "candidate_tickers": candidate_tickers, "quant_data": quant_data,
             "pending_orders": pending_orders
         })
     except Exception as e:
@@ -397,6 +414,28 @@ def executer_node(state: AgentState) -> dict:
     logger.info("[NODE] EXECUTER: Executing the trade ")
     
     decision = state.get("proposed_decision")
+    
+    if decision.action.upper() == "HOLD":
+        logger.info("[EXECUTER] Action is HOLD, skipping order execution.")
+        return {"error_message": None}
+        
+    if decision.quantity <= 0:
+        error_msg = f"Quantity must be > 0, got {decision.quantity}"
+        logger.error(f"[ERROR] EXECUTER failed: {error_msg}")
+        return {"error_message": error_msg}
+    
+    try:
+        rate_limiter.acquire("alpaca_rpm")
+        trading_client = AlpacaService().client
+        order_request = GetOrdersRequest(status=QueryOrderStatus.OPEN)
+        open_orders = trading_client.get_orders(order_request)
+        
+        for order in open_orders:
+            if order.symbol == decision.ticker and decision.action.upper() in str(order.side).upper():
+                logger.info(f"[EXECUTER] Pending {decision.action} order already exists for {decision.ticker}. Skipping execution.")
+                return {"error_message": None}
+    except Exception as e:
+        logger.warning(f"[EXECUTER] Could not check pending orders: {e}")
     
     logger.info(f"[EXECUTER] Sending order to Alpaca: {decision.action} {decision.quantity} {decision.ticker} ")
     

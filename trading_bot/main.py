@@ -51,10 +51,10 @@ def user_input_thread():
     """Runs in the background, listening for user commands."""
     while True:
         try:
-            new_focus = input()
-            if new_focus.strip():
-                shared_config.update_focus(new_focus.strip())
-                print(f"\n✅ [COMMAND RECEIVED] Market focus will change to '{new_focus.strip()}' at the start of the next cycle!\n")
+            new_action = input()
+            if new_action.strip():
+                shared_config.update_action(new_action.strip())
+                print(f"\n✅ [COMMAND RECEIVED] The agent will focus on the following action: '{new_action.strip()}' at the start of the next cycle!\n")
         except EOFError:
             # Ignoriamo il segnale "sporco" inviato dai terminali Windows
             import time
@@ -72,7 +72,7 @@ def main():
     
     initial_state = {
         "portfolio": {},
-        "market_focus": "Innovative Tech and EV",
+        "user_action": None,
         "target_tickers": [], 
         "proposed_decision": None,
         "is_decision_valid": False,

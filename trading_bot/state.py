@@ -31,6 +31,8 @@ class AgentState(TypedDict):
     portfolio: Dict[str, Any]
     recent_history: List[Dict[str, Any]]  # Le ultime N operazioni lette dal DB all'inizio del ciclo
     
+    user_action: Optional[str]            # Azione esplicita richiesta dall'utente
+    
     market_themes: List[str]              # Es: ["AI regulation", "Oil supply shortage"]
     candidate_tickers: Dict[str, str]          # I ticker scoperti dall'agente da analizzare
 
