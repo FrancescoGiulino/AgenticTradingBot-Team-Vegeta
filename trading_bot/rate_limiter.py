@@ -16,7 +16,6 @@ class GlobalRateLimiter:
     _lock = threading.Lock()
     
     def __new__(cls, *args, **kwargs):
-        # Singleton pattern
         with cls._lock:
             if not cls._instance:
                 cls._instance = super(GlobalRateLimiter, cls).__new__(cls)
@@ -49,11 +48,9 @@ class GlobalRateLimiter:
         with self.buckets_lock:
             bucket = self.buckets.get(name)
             if not bucket:
-                # If bucket not registered, we assume unlimited
                 return
 
             if bucket["max_tokens"] == -1:
-                # Unlimited, do not block
                 return
 
         while True:
@@ -61,7 +58,6 @@ class GlobalRateLimiter:
                 now = time.time()
                 elapsed = now - bucket["last_refill"]
                 
-                # Refill logic
                 tokens_to_add = (elapsed / bucket["refill_interval"]) * bucket["max_tokens"]
                 if tokens_to_add > 0:
                     bucket["current_tokens"] = min(bucket["max_tokens"], bucket["current_tokens"] + tokens_to_add)
@@ -73,13 +69,11 @@ class GlobalRateLimiter:
                     logger.info(f"[RATE LIMITER] Used {amount} token(s) for '{name}'. Remaining tokens: {remaining:.2f}")
                     return
                 
-                # If not enough tokens, calculate sleep time
                 deficit = amount - bucket["current_tokens"]
-                # time needed to generate `deficit` tokens
                 time_to_wait = (deficit / bucket["max_tokens"]) * bucket["refill_interval"]
             
             logger.warning(f"[RATE LIMITER] Limit reached for '{name}'. Sleeping for {time_to_wait:.2f} seconds to acquire {amount} tokens.")
-            time.sleep(max(0.1, time_to_wait)) # Sleep at least 0.1s to avoid tight loop
+            time.sleep(max(0.1, time_to_wait))
 
     def load_config(self, config_path: str):
         """
@@ -101,5 +95,4 @@ class GlobalRateLimiter:
         except Exception as e:
             logger.error(f"Failed to load rate limiter configuration: {e}")
 
-# Global instance for easy access
 rate_limiter = GlobalRateLimiter()

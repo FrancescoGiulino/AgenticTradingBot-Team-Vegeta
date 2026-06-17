@@ -1,59 +1,33 @@
 import os
 import logging
+import json
+import time
+from datetime import datetime
+from pydantic import BaseModel, Field
 
-from trading_bot.knowledge_manager import knowledge_base
-
-logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.callbacks import BaseCallbackHandler
+from typing import Literal, List
+
+from trading_bot.knowledge_manager import knowledge_base
 from .state import AgentState, TradeDecision, DynamicWatchlist
-from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news
+from .tools import get_portfolio_status, get_stock_price, execute_trade, get_stock_news, web_search
 from .rate_limiter import rate_limiter
-import json
-from datetime import datetime
-import time
 from .db import log_trade_journal
 from .config import shared_config
 
-class FileStreamCallbackHandler(BaseCallbackHandler):
-    def __init__(self, file_path):
-        self.file_path = file_path
-        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-        
-    def on_llm_start(self, serialized: dict, prompts: list, **kwargs) -> None:
-        with open(self.file_path, "a", encoding="utf-8") as f:
-            f.write("\n[DECISOR]\n")
-            f.flush()
+logger = logging.getLogger(__name__)
 
-    def on_llm_new_token(self, token: str, **kwargs) -> None:
-        with open(self.file_path, "a", encoding="utf-8") as f:
-            f.write(token)
-            f.flush()
-
-stream_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "shared", "thinking_stream.txt")
-stream_handler = FileStreamCallbackHandler(stream_file_path)
-
-# Initialize the LLM
 llm = ChatGoogleGenerativeAI(
     model="gemma-4-31b-it",
     api_key=os.getenv("GOOGLE_API_KEY"),
     temperature=0.15,
     timeout=60.0,
-    max_retries=1,
-    streaming=True,
-    callbacks=[stream_handler]
+    max_retries=1
 )
 
 def init_portfolio(state: AgentState) -> dict:
-    """
-    Node: INIT_PORTFOLIO
-    Fetches portfolio, checks for user interruptions, and generates a watchlist.
-    """
     logger.info("[NODE] INIT_PORTFOLIO: Fetching portfolio data ")
-    with open(stream_file_path, "a", encoding="utf-8") as f:
-        f.write(f"\n[INIT_PORTFOLIO]\nFetching current portfolio status from Alpaca...\n")
-        
     portfolio_data = get_portfolio_status.invoke({})
     error_msg = portfolio_data.get("error")
     
@@ -61,97 +35,186 @@ def init_portfolio(state: AgentState) -> dict:
         logger.warning(f" [WARNING] INIT_PORTFOLIO error: {error_msg} ")
         return {"portfolio": {}, "error_message": error_msg}
 
-    # 1. Leggiamo la memoria condivisa per vedere se l'utente ha inserito comandi
+    cash = portfolio_data.get("cash", 0.0)
+    positions = portfolio_data.get("positions", {})
+    pos_str = []
+    for ticker, data in positions.items():
+        pos_str.append(f"{data['qty']} {ticker} (Market Value: ${data['market_value']:.2f}, Unrealized P&L: ${data['unrealized_pl']:.2f})")
+    
+    pos_text = ", ".join(pos_str) if pos_str else "No open positions."
+    portfolio_summary = f"Cash Available: ${cash:.2f}\nPositions: {pos_text}"
+
     current_focus, has_changed = shared_config.get_focus_and_reset_flag()
     target_tickers = list(state.get("target_tickers", []))
     
-    # 2. Se l'utente ha cambiato focus, FORZIAMO lo svuotamento della watchlist
     if has_changed:
-        logger.info(f"--- [SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist! ---")
-        target_tickers = [] # Questo costringerà l'Esploratore ad attivarsi
-        
-    # 3. DYNAMIC WATCHLIST GENERATION
-    if not target_tickers:
-        logger.info(f"[EXPLORER] Watchlist empty. Generating new dynamic tickers for sector: {current_focus}...")
-        explorer_prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Output MUST follow the JSON schema."),
-            ("human", "Generate tickers for this focus: {focus}")
-        ])
-        
-        explorer_chain = explorer_prompt | llm.with_structured_output(DynamicWatchlist)
-        try:
-            watchlist_result = explorer_chain.invoke({"focus": current_focus})
-            target_tickers = watchlist_result.tickers
-            logger.info(f"[EXPLORER] New Watchlist Created: {target_tickers}. Rationale: {watchlist_result.rationale}")
-        except Exception as e:
-            logger.error(f"[ERROR] EXPLORER failed to generate watchlist: {e}")
-            target_tickers = ["AAPL", "MSFT"] # Fallback
+        logger.info(f"[SYSTEM ALERT] User requested new focus: '{current_focus}'. Clearing old watchlist!")
+        target_tickers = []
 
-    return {
-        "portfolio": portfolio_data,
-        "target_tickers": target_tickers,
-        "market_focus": current_focus, # Salviamo il focus aggiornato nello stato
-        "error_message": None 
-    }
-
-decisor_llm = llm.with_structured_output(TradeDecision)
-
-def decisor(state: AgentState) -> dict:
-    """Node: DECISOR"""
-    logger.info("[NODE] DECISOR: Analyzing market and reasoning ")
-    
-    portfolio = state.get("portfolio", {})
-    target_tickers = state.get("target_tickers", ["AAPL"])
-    current_ticker = target_tickers[0] if target_tickers else "AAPL"
-    
-    error_message = state.get("error_message")
-    
-    if error_message:
-        logger.warning(f" [WARNING] DECISOR detected an error: {error_message}. Defaulting to HOLD. ")
-        fallback_decision = TradeDecision(
-            ticker=current_ticker, action="HOLD", quantity=0, news_summary="N/A",
-            current_price=0.0, rationale=f"System error upstream: {error_message}."
-        )
-        return {"proposed_decision": fallback_decision}
-
-    price_data = get_stock_price.invoke(current_ticker)
-    
-    logger.info(f"[DECISOR] Fetching news for {current_ticker}... ")
-    news_data = get_stock_news.invoke(current_ticker)
-    prompt_info = knowledge_base.get_knowledge("the_intelligent_investor.txt")
-    
-    # Load configuration
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
-    user_config = {}
+    user_command = ""
     if os.path.exists(config_path):
         with open(config_path, "r") as f:
             user_config = json.load(f)
+            user_command = user_config.get("wanted_action", "").strip()
 
-    # Prepare the system prompt enforcing your exact business rules
+    return {
+        "portfolio": portfolio_data,
+        "portfolio_summary": portfolio_summary,
+        "user_command": user_command,
+        "market_focus": current_focus,
+        "target_tickers": target_tickers,
+        "error_message": None 
+    }
+
+class SupervisorDecision(BaseModel):
+    next_node: Literal["researcher", "decisor", "checker", "executer", "summarizer", "FINISH"] = Field(
+        description="The next node to route to. 'researcher' to gather context on user commands. 'decisor' to make a trading decision. 'checker' to validate a proposed decision. 'executer' to execute a valid decision. 'summarizer' to wrap up after checker rejects or executer finishes. 'FINISH' to end the graph cycle."
+    )
+    rationale: str = Field(description="Why this node was chosen.")
+
+def supervisor_node(state: AgentState) -> dict:
+    logger.info("[NODE] SUPERVISOR: Deciding next action based on state")
+    
+    # Simple static logic to avoid loop if error
+    if state.get("error_message"):
+        logger.warning(f"[SUPERVISOR] Error detected: {state['error_message']}. Routing to summarizer.")
+        return {"next_node": "summarizer"}
+
+    system_prompt = """You are the Supervisor of an AI Trading Bot.
+You control the execution flow between specialized worker nodes.
+Available Nodes:
+- 'researcher': Call this if there is a 'user_command' (prioritize this!) but 'research_context' is empty. Alternatively, if there is NO 'user_command', act autonomously: check the 'market_focus' and if 'target_tickers' is empty, call 'researcher' to generate a watchlist.
+- 'decisor': Call this to propose a trade (BUY/SELL/HOLD). Needs 'portfolio_summary' and either 'target_tickers' or 'user_command'.
+- 'checker': Call this after the decisor has proposed a decision, to validate it against the portfolio limits.
+- 'executer': Call this ONLY after the checker has marked 'is_decision_valid' as True.
+- 'summarizer': Call this after execution, or if the checker rejected the decision, to log the result.
+- 'FINISH': Call this to end the cycle (e.g., after summarizing, or if there's nothing to do).
+
+Analyze the current state and determine the next step.
+"""
+
+    state_desc = f"""
+User Command: {state.get("user_command", "None")}
+Market Focus: {state.get("market_focus", "None")}
+Research Context: {state.get("research_context", "None")}
+Target Tickers: {state.get("target_tickers", [])}
+Proposed Decision: {state.get("proposed_decision", "None")}
+Is Decision Valid: {state.get("is_decision_valid", "False")}
+Portfolio Summary: {state.get("portfolio_summary", "None")}
+"""
+
     prompt = ChatPromptTemplate.from_messages([
-        ("system", f"""You are an active and strategic AI Trading Agent.
-        Your output MUST be based ONLY on the provided data. Do not hallucinate prices or news.
-        
-        {prompt_info}
+        ("system", system_prompt),
+        ("human", state_desc)
+    ])
 
-        Follow these strict sequential rules to make your decision:
-        1. PORTFOLIO PROTECTION (SELL): If the 'target_ticker' is currently owned and is in loss (unrealized_pl < 0), you MUST propose "SELL".
-        2. INITIAL CAPITAL DEPLOYMENT (BUY): Look at the Portfolio Status. If your portfolio is empty (0 positions) and you have a lot of cash, your primary mandate is to enter the market. If the news for the current ticker is neutral, slightly positive, or just informational, you MUST propose "BUY" (choose a quantity between 5 and 15). Do not sit on 100% cash.
-        3. OPPORTUNISTIC BUY: If you already have positions in the market, propose "BUY" only if the recent news is distinctly positive and encouraging.
-        4. HOLD: If you already have positions and the news is neutral/mixed, or if the news is strictly negative, propose "HOLD".
-        5. WANTED ACTION: If the 'wanted_action' field in the user configuration contains a specific command (e.g., "sell all google stocks"), you MUST prioritize executing it.
-        CRITICAL CONSTRAINT: You cannot "SELL" 0 shares or "BUY" 0 shares. If your calculated quantity for a BUY or SELL is 0, you MUST propose "HOLD" instead.
-        
-        WANTED ACTION CLEARANCE:
-        If you successfully executed or addressed the 'wanted_action' during this cycle (even if the action was rejected or deemed impossible for now), set 'cleared_wanted_action' to true. Otherwise, keep it false.
-        
-        USER CONFIGURATION AND FEEDBACK CONSTRAINTS:
-        Consider these constraints set by the user: {{user_config}}
-        Ensure your actions comply with the user feedback guidelines provided in the configuration.
+    chain = prompt | llm.with_structured_output(SupervisorDecision)
+    
+    try:
+        decision = chain.invoke({})
+        logger.info(f"[SUPERVISOR] Decided: {decision.next_node}. Rationale: {decision.rationale}")
+        return {"next_node": decision.next_node}
+    except Exception as e:
+        logger.error(f"[ERROR] Supervisor LLM failed: {e}")
+        return {"next_node": "FINISH"}
 
-        Provide a detailed, explicit 'rationale' explaining exactly why you chose this action (e.g., explicitly mention that you are buying to deploy initial capital if rule 2 triggers)."""),
+class ResearchOutput(BaseModel):
+    target_tickers: List[str] = Field(description="List of stock tickers identified from the research to focus on.")
+    research_context: str = Field(description="Summary of the research findings to help the decisor.")
+
+def researcher_node(state: AgentState) -> dict:
+    logger.info("[NODE] RESEARCHER: Gathering information")
+    
+    command = state.get("user_command", "")
+    market_focus = state.get("market_focus", "technology")
+    
+    if not command:
+        logger.info(f"[RESEARCHER] Autonomous mode. Generating watchlist for focus: {market_focus}")
+        explorer_prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are an expert financial researcher. Based on the given market sector/focus, output a list of 2 or 3 highly liquid, well-known US stock tickers to analyze. Provide a brief rationale in 'research_context'."),
+            ("human", "Generate tickers for this focus: {focus}")
+        ])
+        
+        explorer_chain = explorer_prompt | llm.with_structured_output(ResearchOutput)
+        try:
+            result = explorer_chain.invoke({"focus": market_focus})
+            logger.info(f"[RESEARCHER] New Watchlist Created: {result.target_tickers}")
+            return {
+                "target_tickers": result.target_tickers,
+                "research_context": result.research_context
+            }
+        except Exception as e:
+            logger.error(f"[ERROR] EXPLORER failed to generate watchlist: {e}")
+            return {"research_context": "Fallback due to error.", "target_tickers": ["AAPL", "MSFT"]}
+
+    logger.info(f"[RESEARCHER] User command detected. Searching web for: {command}")
+    search_result = ""
+    try:
+        search_result = web_search.invoke({"query": command})
+    except Exception as e:
+        search_result = f"Search failed: {e}"
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are a financial researcher. Based on the user command and search results, identify the relevant US stock tickers (e.g., AAPL, MSFT) and summarize the context that a trader would need to know."),
+        ("human", "User Command: {command}\nSearch Results: {search_result}")
+    ])
+    
+    chain = prompt | llm.with_structured_output(ResearchOutput)
+    
+    try:
+        result = chain.invoke({"command": command, "search_result": search_result})
+        logger.info(f"[RESEARCHER] Found Tickers: {result.target_tickers}")
+        
+        target_tickers = list(state.get("target_tickers", []))
+        for t in reversed(result.target_tickers):
+            if t in target_tickers:
+                target_tickers.remove(t)
+            target_tickers.insert(0, t)
+            
+        return {
+            "target_tickers": target_tickers,
+            "research_context": result.research_context
+        }
+    except Exception as e:
+        logger.error(f"[ERROR] Researcher LLM failed: {e}")
+        return {"research_context": "Failed to analyze research data.", "target_tickers": state.get("target_tickers", [])}
+
+
+def decisor(state: AgentState) -> dict:
+    logger.info("[NODE] DECISOR: Analyzing market and reasoning ")
+    
+    portfolio = state.get("portfolio", {})
+    target_tickers = state.get("target_tickers", [])
+    current_ticker = target_tickers[0] if target_tickers else "AAPL"
+    
+    price_data = get_stock_price.invoke(current_ticker)
+    news_data = get_stock_news.invoke(current_ticker)
+    prompt_info = knowledge_base.get_knowledge("the_intelligent_investor.txt")
+    
+    user_command = state.get("user_command", "")
+    research_context = state.get("research_context", "")
+
+    system_prompt_template = f"""You are an active and strategic AI Trading Agent.
+Your output MUST be based ONLY on the provided data. Do not hallucinate prices or news.
+{prompt_info}
+
+USER COMMAND: "{user_command}"
+RESEARCH CONTEXT: "{research_context}"
+PORTFOLIO SUMMARY:
+{state.get("portfolio_summary")}
+
+Follow these strict rules:
+1. If there is a USER COMMAND, evaluate if it can be executed given the portfolio status and market data.
+2. If there is NO user command, use your discretion to buy (if lots of cash and positive news), sell (if holding in loss or bad news), or hold.
+3. CRITICAL CONSTRAINT: You cannot "SELL" 0 shares or "BUY" 0 shares. If your calculated quantity for a BUY or SELL is 0, you MUST propose "HOLD" instead.
+4. Set 'cleared_wanted_action' to true if you are successfully addressing the user command in this cycle.
+
+Provide a detailed, explicit 'rationale' explaining exactly why you chose this action based on the user's command and market data."""
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt_template),
         ("human", """
-        Portfolio Status: {portfolio}
         Target Ticker: {ticker}
         Current Price Data: {price_data}
         Recent News: {news_data}
@@ -159,100 +222,26 @@ def decisor(state: AgentState) -> dict:
         Formulate your final decision.""")
     ])
     
+    decisor_llm = llm.with_structured_output(TradeDecision)
     reasoning_chain = prompt | decisor_llm
     
     try:
-        # Rate limiting logic
-        prompt_str = prompt.format(portfolio=portfolio, ticker=current_ticker, price_data=price_data, news_data=news_data, user_config=json.dumps(user_config))
-        estimated_tokens = len(prompt_str) // 4
-        rate_limiter.acquire("google_genai_rpm", 1)
-        rate_limiter.acquire("google_genai_tpm", estimated_tokens)
-        
         decision = reasoning_chain.invoke({
-            "portfolio": portfolio, "ticker": current_ticker, "price_data": price_data, "news_data": news_data, "user_config": json.dumps(user_config)
+            "ticker": current_ticker, "price_data": price_data, "news_data": news_data
         })
     except Exception as e:
         logger.error(f" [ERROR] DECISOR LLM failed: {str(e)} ")
         decision = TradeDecision(
             ticker=current_ticker, action="HOLD", quantity=0, news_summary="N/A",
-            current_price=0.0, rationale=f"LLM processing error: {str(e)}."
+            current_price=0.0, rationale=f"LLM processing error: {str(e)}.",
+            cleared_wanted_action=False
         )
 
     return {"proposed_decision": decision}
 
-def wanted_action_decisor(state: AgentState) -> dict:
-    """Node: WANTED_ACTION_DECISOR"""
-    logger.info("[NODE] WANTED_ACTION_DECISOR: Prioritizing execution of user wanted_action ")
-    
-    portfolio = state.get("portfolio", {})
-    error_message = state.get("error_message")
-    
-    if error_message:
-        logger.warning(f" [WARNING] WANTED_ACTION_DECISOR detected an error: {error_message}. ")
-        return {"proposed_decision": TradeDecision(
-            ticker="N/A", action="HOLD", quantity=0, news_summary="N/A",
-            current_price=0.0, rationale=f"System error upstream: {error_message}.", cleared_wanted_action=False
-        )}
-
-    # Read configuration
-    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
-    user_config = {}
-    wanted_action = ""
-    if os.path.exists(config_path):
-        with open(config_path, "r") as f:
-            user_config = json.load(f)
-            wanted_action = user_config.get("wanted_action", "")
-
-    with open(stream_file_path, "a", encoding="utf-8") as f:
-        f.write(f"\n[WANTED_ACTION_DECISOR]\nUser requested explicit action: '{wanted_action}'...\n")
-
-    # Step 1: Parse the wanted action into a TradeDecision shell (to get ticker, action, quantity)
-    parse_prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert trading assistant. Translate the user's plain-text command into a structured TradeDecision. Infer the US stock ticker (e.g. 'AAPL' for Apple, 'NKE' for Nike). Determine action (BUY, SELL, HOLD) and quantity. Set news_summary to 'N/A', current_price to 0.0, and cleared_wanted_action to true. Your rationale MUST indicate this is to satisfy the wanted_action."),
-        ("human", "User Command: {wanted_action}")
-    ])
-    
-    parse_chain = parse_prompt | decisor_llm
-    
-    try:
-        estimated_tokens = len(str(wanted_action)) // 4
-        rate_limiter.acquire("google_genai_rpm", 1)
-        rate_limiter.acquire("google_genai_tpm", estimated_tokens)
-        
-        parsed_decision = parse_chain.invoke({"wanted_action": wanted_action})
-    except Exception as e:
-        logger.error(f" [ERROR] WANTED_ACTION_DECISOR LLM parse failed: {str(e)} ")
-        return {"proposed_decision": TradeDecision(
-            ticker="N/A", action="HOLD", quantity=0, news_summary="N/A",
-            current_price=0.0, rationale=f"LLM parsing error: {str(e)}.", cleared_wanted_action=True
-        )}
-
-    # If parsing returned HOLD or failed to find a valid action, just return it
-    if parsed_decision.action.upper() not in ["BUY", "SELL"] or parsed_decision.quantity <= 0:
-        parsed_decision.cleared_wanted_action = True
-        return {"proposed_decision": parsed_decision}
-
-    # Step 2: Fetch current price for the parsed ticker to validate feasibility
-    logger.info(f"[WANTED_ACTION_DECISOR] Extracted Ticker: {parsed_decision.ticker}. Fetching current price... ")
-    price_data = get_stock_price.invoke(parsed_decision.ticker)
-    
-    if "error" in price_data:
-        logger.warning(f"[WARNING] Could not fetch price for {parsed_decision.ticker}: {price_data['error']}. Setting to 1.0 just to let it pass if paper trading allows, or holding.")
-        parsed_decision.current_price = 1.0 # arbitrary fallback if API fails
-    else:
-        parsed_decision.current_price = price_data.get("price", 1.0)
-        
-    parsed_decision.cleared_wanted_action = True
-    
-    return {"proposed_decision": parsed_decision}
-
 def checker(state: AgentState) -> dict:
-    """Node: CHECKER"""
     logger.info("[NODE] CHECKER: Validating feasibility of the decision ")
     
-    with open(stream_file_path, "a", encoding="utf-8") as f:
-        f.write(f"\n[CHECKER]\nValidating feasibility of the proposed decision...\n")
-        
     decision = state.get("proposed_decision")
     portfolio = state.get("portfolio", {})
     
@@ -294,12 +283,8 @@ def checker(state: AgentState) -> dict:
     return {"is_decision_valid": False}
 
 def executer(state: AgentState) -> dict:
-    """Node: EXECUTER"""
     logger.info("[NODE] EXECUTER: Executing the trade ")
     
-    with open(stream_file_path, "a", encoding="utf-8") as f:
-        f.write(f"\n[EXECUTER]\nPreparing to execute the trade on Alpaca...\n")
-        
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
     
@@ -321,21 +306,16 @@ def executer(state: AgentState) -> dict:
     return {"error_message": None}
 
 def summarizer(state: AgentState) -> dict:
-    """Node: SUMMARIZER"""
     logger.info("[NODE] SUMMARIZER: Logging journal and cleaning state ")
     
-    with open(stream_file_path, "a", encoding="utf-8") as f:
-        f.write(f"\n[SUMMARIZER]\nLogging cycle outcome to Trade Journal and cleaning state...\n")
-        
     decision = state.get("proposed_decision")
     is_valid = state.get("is_decision_valid", False)
     error_message = state.get("error_message")
     last_n = state.get("last_n_actions", [])
     
-    # DYNAMIC WATCHLIST MANAGEMENT: Remove the ticker we just processed
     target_tickers = list(state.get("target_tickers", []))
     if target_tickers:
-        target_tickers.pop(0) # Pop the first item off the list
+        target_tickers.pop(0) 
     
     MAX_N = 5
     
@@ -351,7 +331,7 @@ def summarizer(state: AgentState) -> dict:
         "quantity": decision.quantity if decision else 0,
         "price": decision.current_price if decision else 0.0,
         "news_summary": decision.news_summary if decision else "N/A",
-        "rationale": decision.rationale if decision else "No decision generated due to system constraints.",
+        "rationale": decision.rationale if decision else "No decision generated.",
         "outcome": outcome
     }
     
@@ -385,15 +365,13 @@ def summarizer(state: AgentState) -> dict:
     updated_last_n.append({"ticker": journal_entry["ticker"], "action": journal_entry["action"], "outcome": journal_entry["outcome"]})
     if len(updated_last_n) > MAX_N: updated_last_n.pop(0)
 
-    # 5. State Cleanup: return updates. 
-    # Returning None for temporary flags resets them for the next loop iteration.
-    with open(stream_file_path, "a", encoding="utf-8") as f:
-        f.write("\n[END]\n")
     return {
-        "target_tickers": target_tickers, # 🟢 Restituiamo la lista aggiornata (accorciata) per il prossimo ciclo
+        "target_tickers": target_tickers,
         "last_n_actions": updated_last_n,
         "journal": [journal_entry], 
         "proposed_decision": None,  
         "is_decision_valid": False, 
-        "error_message": None       
+        "error_message": None,
+        "research_context": None, # clear research context for next cycle
+        "user_command": None # clear command state
     }

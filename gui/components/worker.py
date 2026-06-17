@@ -60,60 +60,6 @@ def render_worker():
                 )
                 st.session_state.messages = st.session_state.messages + [{"role": "assistant", "content": event_msg, "is_event": True}]
 
-    # --- Live Thinking Stream (Integrated into Chat) ---
-    stream_file = os.path.join(project_root, "shared", "thinking_stream.txt")
-    
-    if "stream_cursor" not in st.session_state:
-        if os.path.exists(stream_file):
-            st.session_state.stream_cursor = os.path.getsize(stream_file)
-        else:
-            st.session_state.stream_cursor = 0
-            
-    if "current_stream_tag" not in st.session_state:
-        st.session_state.current_stream_tag = None
-        st.session_state.current_stream_text = ""
-
-    if os.path.exists(stream_file):
-        with open(stream_file, "r", encoding="utf-8") as f:
-            f.seek(st.session_state.stream_cursor)
-            new_text = f.read()
-            st.session_state.stream_cursor = f.tell()
-            
-        if new_text:
-            import re
-            parts = re.split(r'\[([A-Z_]+)\]', new_text)
-            
-            # parts[0] belongs to the current_stream_tag
-            if st.session_state.current_stream_tag:
-                st.session_state.current_stream_text += parts[0]
-            
-            if len(parts) > 1:
-                # The old tag is now complete, save it to messages
-                if st.session_state.current_stream_tag and st.session_state.current_stream_tag != "END":
-                    tag = st.session_state.current_stream_tag
-                    text = st.session_state.current_stream_text.strip()
-                    if text:
-                        st.session_state.messages = st.session_state.messages + [{
-                            "role": "assistant",
-                            "content": f"**{tag}**\n{text}",
-                            "avatar_type": tag
-                        }]
-                
-                # Intermediate tags
-                for i in range(1, len(parts) - 2, 2):
-                    tag = parts[i]
-                    text = parts[i+1].strip()
-                    if text and tag != "END":
-                        st.session_state.messages = st.session_state.messages + [{
-                            "role": "assistant",
-                            "content": f"**{tag}**\n{text}",
-                            "avatar_type": tag
-                        }]
-                
-                # The last tag becomes the new current_stream_tag
-                st.session_state.current_stream_tag = parts[-2]
-                st.session_state.current_stream_text = parts[-1]
-
     # --- Display Chat History ---
     AVATARS = {
         "INIT_PORTFOLIO": "💼",
@@ -133,14 +79,6 @@ def render_worker():
             
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
-
-    # Render the live streaming message
-    if st.session_state.current_stream_tag and st.session_state.current_stream_tag != "END":
-        tag = st.session_state.current_stream_tag
-        avatar = AVATARS.get(tag, "🤖")
-        with st.chat_message("assistant", avatar=avatar):
-            with st.spinner(f"{tag} is working..."):
-                st.empty()
 
     # --- Handle Chat Input ---
     if prompt := st.chat_input("Enter configuration instructions (e.g., 'Don't buy tech stocks')..."):

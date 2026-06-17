@@ -2,12 +2,10 @@ from typing import TypedDict, Annotated, List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 import operator
 
-# Output Schema for the Dynamic Watchlist (EXPLORER phase)
 class DynamicWatchlist(BaseModel):
     tickers: List[str] = Field(description="List of 2 to 3 valid US stock ticker symbols to monitor (e.g. ['TSLA', 'F', 'GM']).")
     rationale: str = Field(description="Why you chose these specific tickers based on the current sector focus.")
 
-# Output Schema for the DECISOR node
 class TradeDecision(BaseModel):
     ticker: str = Field(description="The ticker symbol of the stock")
     action: str = Field(description="The action to take: 'BUY', 'SELL', or 'HOLD'")
@@ -17,20 +15,18 @@ class TradeDecision(BaseModel):
     rationale: str = Field(description="Explicit and detailed reasoning for the decision (Why buy/sell/hold?)")
     cleared_wanted_action: bool = Field(default=False, description="Set to true ONLY if you successfully executed or fully addressed the 'wanted_action' in this cycle, so it can be cleared.")
 
-# Graph State definition
 class AgentState(TypedDict):
-    # Portfolio data fetched from Alpaca
     portfolio: Dict[str, Any]
-    
-    # The sector or market trend we want the agent to focus on (e.g., "automotive", "tech", "healthcare")
     market_focus: Optional[str]
-    
-    # Tickers we are currently analyzing (Dynamically populated)
     target_tickers: List[str]
-    
+    next_node: Optional[str]
+    portfolio_summary: Optional[str]
+    user_command: Optional[str]
+    research_context: Optional[str]
     proposed_decision: Optional[TradeDecision]
     is_decision_valid: bool
     last_n_actions: List[Dict[str, Any]]
     journal: Annotated[List[Dict[str, Any]], operator.add]
     error_message: Optional[str]
     cycle_id: Optional[str]
+    wanted_action_context: Optional[str]

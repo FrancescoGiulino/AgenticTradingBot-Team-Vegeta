@@ -3,69 +3,57 @@ from langgraph.graph import StateGraph, START, END
 from .state import AgentState
 
 logger = logging.getLogger(__name__)
-import os
-import json
-from .nodes import init_portfolio, decisor, wanted_action_decisor, checker, executer, summarizer
 
-def route_after_init(state: AgentState) -> str:
-    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "configuration.json")
-    if os.path.exists(config_path):
-        try:
-            with open(config_path, "r") as f:
-                user_config = json.load(f)
-                if user_config.get("wanted_action", "").strip():
-                    logger.info("[ROUTER] Wanted action found. Routing to WANTED_ACTION_DECISOR.")
-                    return "wanted_action_decisor"
-        except Exception as e:
-            logger.error(f"[ROUTER] Error reading configuration: {e}")
-    
-    logger.info("[ROUTER] No wanted action. Routing to DECISOR.")
-    return "decisor"
+from .nodes import (
+    init_portfolio,
+    supervisor_node,
+    researcher_node,
+    decisor,
+    checker,
+    executer,
+    summarizer
+)
 
-def route_after_checker(state: AgentState) -> str:
-    if state.get("is_decision_valid", False):
-        logger.info("[ROUTER] Decision is VALID. Routing to EXECUTER.")
-        return "executer"
-    else:
-        logger.info("[ROUTER] Decision is INVALID. Bypassing execution, routing to SUMMARIZER.")
-        return "summarizer"
+def supervisor_router(state: AgentState) -> str:
+    next_node = state.get("next_node", "FINISH")
+    if next_node == "FINISH":
+        return END
+    return next_node
 
 workflow = StateGraph(AgentState)
 
+# Add all nodes
 workflow.add_node("init_portfolio", init_portfolio)
+workflow.add_node("supervisor", supervisor_node)
+workflow.add_node("researcher", researcher_node)
 workflow.add_node("decisor", decisor)
-workflow.add_node("wanted_action_decisor", wanted_action_decisor)
 workflow.add_node("checker", checker)
 workflow.add_node("executer", executer)
 workflow.add_node("summarizer", summarizer)
 
+# Start sequence
 workflow.add_edge(START, "init_portfolio")
+workflow.add_edge("init_portfolio", "supervisor")
 
+# Supervisor routing
 workflow.add_conditional_edges(
-    "init_portfolio",
-    route_after_init,
+    "supervisor",
+    supervisor_router,
     {
-        "wanted_action_decisor": "wanted_action_decisor",
-        "decisor": "decisor"
-    }
-)
-
-workflow.add_edge("decisor", "checker")
-workflow.add_edge("wanted_action_decisor", "checker")
-
-workflow.add_conditional_edges(
-    "checker",
-    route_after_checker,
-    {
+        "researcher": "researcher",
+        "decisor": "decisor",
+        "checker": "checker",
         "executer": "executer",
-        "summarizer": "summarizer"
+        "summarizer": "summarizer",
+        END: END
     }
 )
 
-workflow.add_edge("executer", "summarizer")
-
-# MODIFICA CHIAVE: Invece di tornare a init_portfolio, il grafo finisce qui.
-# Sarà il main.py a far ripartire un nuovo grafo dopo 30 secondi.
-workflow.add_edge("summarizer", END)
+# All workers return control to the supervisor
+workflow.add_edge("researcher", "supervisor")
+workflow.add_edge("decisor", "supervisor")
+workflow.add_edge("checker", "supervisor")
+workflow.add_edge("executer", "supervisor")
+workflow.add_edge("summarizer", "supervisor")
 
 app = workflow.compile()

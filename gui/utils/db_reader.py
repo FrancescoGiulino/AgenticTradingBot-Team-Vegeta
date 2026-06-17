@@ -5,7 +5,6 @@ import os
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "trading_agent.db")
 
 def get_db_connection():
-    # Use a short timeout and connect cleanly for reading
     return sqlite3.connect(DB_PATH, timeout=5.0)
 
 def fetch_table_data(table_name: str, limit: int = 100) -> pd.DataFrame:
